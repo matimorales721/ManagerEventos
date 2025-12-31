@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { Usuario } from "../models/Usuario";
 import { UsuarioEstado } from "../models/enums/usuarioEstado";
 import { UsuarioRepository } from "../repositories/UsuarioRepository";
+import { newDate } from "../utils/dateHelper";
 
 interface CreateUsuarioDTO {
   nombre: string;
@@ -36,7 +37,8 @@ export class UsuarioService {
       throw new Error("Ya existe un usuario activo con ese email");
     }
 
-    const nowIso = new Date().toISOString();
+    const ahora = newDate();
+    const ahoraISO = ahora.toISOString();
 
     const usuario: Usuario = {
       id: this.generateId(),
@@ -46,8 +48,8 @@ export class UsuarioService {
       fechaNacimiento: data.fechaNacimiento,
       email: data.email,
       estado: UsuarioEstado.ACTIVO,
-      createdAt: nowIso,
-      updatedAt: nowIso,
+      createdAt: ahoraISO,
+      updatedAt: ahoraISO,
     };
 
     await this.usuarioRepository.save(usuario);

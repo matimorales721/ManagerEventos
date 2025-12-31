@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { Evento } from "../models/Evento";
 import { EventoEstado } from "../models/enums/eventoEstado";
 import { EventoRepository } from "../repositories/EventoRepository";
+import { newDate } from "../utils/dateHelper";
 
 interface CreateEventoDTO {
   nombre: string;
@@ -22,7 +23,9 @@ export class EventoService {
 
   // Creación de un nuevo evento
   async crearEvento(data: CreateEventoDTO): Promise<Evento> {
-    const nowIso = new Date().toISOString();
+    
+    const ahora = newDate();
+    const ahoraISO = ahora.toISOString();
 
     const evento: Evento = {
       id: this.generateId(),
@@ -31,8 +34,8 @@ export class EventoService {
       fechaHora: data.fechaHora,
       cupoTotal: data.cupoTotal,
       estado: EventoEstado.ACTIVO,
-      createdAt: nowIso,
-      updatedAt: nowIso,
+      createdAt: ahoraISO,
+      updatedAt: ahoraISO,
     };
 
     await this.eventoRepository.save(evento);

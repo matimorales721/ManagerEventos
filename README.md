@@ -468,6 +468,6 @@ ManagerEventos/
 
 - Ideas para seguir desarrollando:
 - - Hasta ahora ya crea Eventros, Usuarios, se pueden reservar entradas, y se puede verificar la entrada
-- - Mejorar el tema de la hora. No me toma la hora local y cuando compara con la fecha está 3 horas desfasado
+- - Mejorar el tema de la hora. Creé un dateHelper que me da la hora con el formato que quiero pero no me convence
 - - Implementar Vistas y Handlebars para tener un monolito
 - - Implementar la BD

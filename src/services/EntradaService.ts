@@ -6,6 +6,7 @@ import { UsuarioRepository } from "../repositories/UsuarioRepository";
 import { EventoEstado } from "../models/enums/eventoEstado";
 import { UsuarioEstado } from "../models/enums/usuarioEstado";
 import { randomUUID } from "crypto";
+import { newDate } from "../utils/dateHelper";
 
 interface ReservarEntradaDTO {
   eventoId: string;
@@ -46,7 +47,9 @@ export class EntradaService {
 
   // Reserva de entradas
   async reservarEntrada(data: ReservarEntradaDTO): Promise<Entrada> {
+    
     const evento = await this.eventoRepository.findById(data.eventoId);
+    
     if (!evento) {
       throw new Error("Evento no encontrado");
     }
@@ -54,7 +57,8 @@ export class EntradaService {
       throw new Error("El evento no está activo");
     }
 
-    const ahora = new Date();
+    const ahora = newDate();
+    const ahoraISO = ahora.toISOString();
 
     // lo comento para probar más fácilmente
     // la Certificacion de Entradas debe comenzar cantidadHorasAntes del evento
@@ -82,7 +86,7 @@ export class EntradaService {
       );
     }
 
-    const nowIso = ahora.toISOString();
+    
 
     const entrada: Entrada = {
       id: this.generateId(),
@@ -91,9 +95,9 @@ export class EntradaService {
       usuarioId: usuario.id,
       cantidadLocalidades: data.cantidadLocalidades,
       estado: EntradaEstado.NUEVA,
-      fechaReserva: nowIso,
-      createdAt: nowIso,
-      updatedAt: nowIso,
+      fechaReserva: ahoraISO,
+      createdAt: ahoraISO,
+      updatedAt: ahoraISO,
     };
 
     await this.entradaRepository.save(entrada);
@@ -102,7 +106,9 @@ export class EntradaService {
 
   // Pago de entradas
   async pagarEntrada(id: string): Promise<Entrada> {
+    
     const entrada = await this.entradaRepository.findById(id);
+    
     if (!entrada) {
       throw new Error("Entrada no encontrada");
     }
@@ -112,6 +118,7 @@ export class EntradaService {
     }
 
     const evento = await this.eventoRepository.findById(entrada.eventoId);
+    
     if (!evento) {
       throw new Error("Evento no encontrado");
     }
@@ -119,15 +126,17 @@ export class EntradaService {
       throw new Error("El evento no está activo");
     }
 
-    const ahora = new Date();
-    const fechaEvento = new Date(evento.fechaHora);
+    const ahora = newDate();
+    const ahoraISO = ahora.toISOString();
+
+    /*const fechaEvento = new Date(evento.fechaHora);
     if (fechaEvento <= ahora) {
       throw new Error("El evento ya ocurrió o está en curso; no se puede pagar la entrada");
-    }
+    }*/
 
     // pago simulado
     entrada.estado = EntradaEstado.ACTIVA;
-    entrada.fechaPago = ahora.toISOString();
+    entrada.fechaPago = ahoraISO;
     entrada.updatedAt = entrada.fechaPago;
 
     await this.entradaRepository.update(entrada);
@@ -150,7 +159,9 @@ export class EntradaService {
       throw new Error("Evento no encontrado");
     }
 
-    const ahora = new Date();
+    const ahora = newDate();
+    const ahoraISO = ahora.toISOString();
+
     const fechaEvento = new Date(evento.fechaHora);
 
     // Permito validar solo si ya es el día del evento (o después) y no está cancelado
@@ -167,7 +178,7 @@ export class EntradaService {
     }*/
 
     entrada.estado = EntradaEstado.UTILIZADA;
-    entrada.fechaUso = ahora.toISOString();
+    entrada.fechaUso = ahoraISO;
     entrada.updatedAt = entrada.fechaUso;
 
     await this.entradaRepository.update(entrada);
@@ -177,16 +188,19 @@ export class EntradaService {
   // Cancelación de entradas vencidas y finalizar eventos terminados
   async cancelarEntradasVencidas(): Promise<{ entradasCanceladasPorReserva: number; entradasCanceladasPorEvento: number; eventosFinalizados: number }> {
     const todas = await this.entradaRepository.findAll();
-    const ahora = new Date();
 
     let entradasCanceladasPorReserva = 0;
     let entradasCanceladasPorEvento = 0;
     let eventosFinalizados = 0;
 
     for (const entrada of todas) {
+
       const evento = await this.eventoRepository.findById(entrada.eventoId);
       if (!evento) continue;
 
+      const ahora = newDate();
+      const ahoraISO = ahora.toISOString();
+      
       const fechaEvento = new Date(evento.fechaHora);
       const fechaReserva = new Date(entrada.fechaReserva);
 
@@ -195,7 +209,7 @@ export class EntradaService {
         const vencimientoReserva = new Date(fechaReserva.getTime() + 24 * 60 * 60 * 1000);
         if (vencimientoReserva < ahora) {
           entrada.estado = EntradaEstado.CANCELADA;
-          entrada.updatedAt = ahora.toISOString();
+          entrada.updatedAt = ahoraISO;
           await this.entradaRepository.update(entrada);
           entradasCanceladasPorReserva++;
           continue;
@@ -208,21 +222,25 @@ export class EntradaService {
         fechaEvento < ahora
       ) {
         entrada.estado = EntradaEstado.CANCELADA;
-        entrada.updatedAt = ahora.toISOString();
+        entrada.updatedAt = ahoraISO;
         await this.entradaRepository.update(entrada);
         entradasCanceladasPorEvento++;
       }
     }
 
+    const ahora = newDate();
+    const ahoraISO = ahora.toISOString();
+
     // Extra: actualizar estado de eventos que ya pasaron (Activo -> Finalizado)
-    const eventos = await this.eventoRepository.findAll();
+    const eventos = (await this.eventoRepository.findAll()).filter(e => e.estado === EventoEstado.ACTIVO);
     for (const evento of eventos) {
       const fechaEvento = new Date(evento.fechaHora);
       const duracion = 2; // horas // IDEA esto podria ser un campo del evento
       const fechaEventoMasDuracion = new Date(fechaEvento.getTime() + duracion * 60 * 60 * 1000); 
+
       if (evento.estado === EventoEstado.ACTIVO && fechaEventoMasDuracion < ahora) {
         evento.estado = EventoEstado.FINALIZADO;
-        evento.updatedAt = ahora.toISOString();
+        evento.updatedAt = ahoraISO;
         await this.eventoRepository.update(evento);
         eventosFinalizados++;
       }
