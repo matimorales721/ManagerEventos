@@ -56,12 +56,13 @@ export class EntradaService {
 
     const ahora = new Date();
 
+    // lo comento para probar más fácilmente
     // la Certificacion de Entradas debe comenzar cantidadHorasAntes del evento
-    const cantidadHorasAntes = 5;
+    /*const cantidadHorasAntes = 5;
     const fechaInicioCertificacionEntradas = new Date(new Date(evento.fechaHora).getTime() - cantidadHorasAntes * 60 * 60 * 1000);
     if (fechaInicioCertificacionEntradas <= ahora) {
       throw new Error("El evento ya ocurrió o está en curso; no se pueden reservar entradas");
-    }
+    }*/
 
     const usuario = await this.usuarioRepository.findById(data.usuarioId);
     if (!usuario || usuario.estado !== UsuarioEstado.ACTIVO) {
@@ -158,12 +159,12 @@ export class EntradaService {
     }
 
     // la Certificacion de Entradas debe comenzar cantidadHorasAntes del evento
-    const cantidadHorasAntes = 5;
+    /*const cantidadHorasAntes = 5;
     const fechaInicioCertificacionEntradas = new Date(fechaEvento.getTime() - cantidadHorasAntes * 60 * 60 * 1000);
     
     if (ahora < fechaInicioCertificacionEntradas) {
       throw new Error("El evento todavía no comenzó, aún no se puede validar la entrada");
-    }
+    }*/
 
     entrada.estado = EntradaEstado.UTILIZADA;
     entrada.fechaUso = ahora.toISOString();
@@ -173,13 +174,14 @@ export class EntradaService {
     return entrada;
   }
 
-  // Cancelación de entradas vencidas
-  async cancelarEntradasVencidas(): Promise<{ canceladasPorReserva: number; canceladasPorEvento: number }> {
+  // Cancelación de entradas vencidas y finalizar eventos terminados
+  async cancelarEntradasVencidas(): Promise<{ entradasCanceladasPorReserva: number; entradasCanceladasPorEvento: number; eventosFinalizados: number }> {
     const todas = await this.entradaRepository.findAll();
     const ahora = new Date();
 
-    let canceladasPorReserva = 0;
-    let canceladasPorEvento = 0;
+    let entradasCanceladasPorReserva = 0;
+    let entradasCanceladasPorEvento = 0;
+    let eventosFinalizados = 0;
 
     for (const entrada of todas) {
       const evento = await this.eventoRepository.findById(entrada.eventoId);
@@ -195,7 +197,7 @@ export class EntradaService {
           entrada.estado = EntradaEstado.CANCELADA;
           entrada.updatedAt = ahora.toISOString();
           await this.entradaRepository.update(entrada);
-          canceladasPorReserva++;
+          entradasCanceladasPorReserva++;
           continue;
         }
       }
@@ -208,13 +210,26 @@ export class EntradaService {
         entrada.estado = EntradaEstado.CANCELADA;
         entrada.updatedAt = ahora.toISOString();
         await this.entradaRepository.update(entrada);
-        canceladasPorEvento++;
+        entradasCanceladasPorEvento++;
       }
     }
 
     // Extra: actualizar estado de eventos que ya pasaron (Activo -> Finalizado)
+    const eventos = await this.eventoRepository.findAll();
+    for (const evento of eventos) {
+      const fechaEvento = new Date(evento.fechaHora);
+      const duracion = 2; // horas // IDEA esto podria ser un campo del evento
+      const fechaEventoMasDuracion = new Date(fechaEvento.getTime() + duracion * 60 * 60 * 1000); 
+      if (evento.estado === EventoEstado.ACTIVO && fechaEventoMasDuracion < ahora) {
+        evento.estado = EventoEstado.FINALIZADO;
+        evento.updatedAt = ahora.toISOString();
+        await this.eventoRepository.update(evento);
+        eventosFinalizados++;
+      }
+    }
+
     // Lo ideal sería un MaintenanceService, pero para simplificar podemos dejarlo para después.
 
-    return { canceladasPorReserva, canceladasPorEvento };
+    return { entradasCanceladasPorReserva, entradasCanceladasPorEvento, eventosFinalizados };
   }
 }
