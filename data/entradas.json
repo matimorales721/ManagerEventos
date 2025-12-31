@@ -1,0 +1,27 @@
+[
+  {
+    "id": "fdaef8f4-a4f9-4aba-bd50-9208a6311f4f",
+    "codigo": "TKT-YDTHPJ",
+    "eventoId": "be633f9a-1be7-46c6-abca-06e6de0aa285",
+    "usuarioId": "145c06ff-3ead-4bb5-a989-4e8e68e7562f",
+    "cantidadLocalidades": 3,
+    "estado": "ACTIVA",
+    "fechaReserva": "2025-12-31T01:11:40.526Z",
+    "createdAt": "2025-12-31T01:11:40.526Z",
+    "updatedAt": "2025-12-31T01:18:35.659Z",
+    "fechaPago": "2025-12-31T01:18:35.659Z"
+  },
+  {
+    "id": "a58d6f81-7502-464e-be2c-144c9a8df4ab",
+    "codigo": "ENT-FY06UR",
+    "eventoId": "be633f9a-1be7-46c6-abca-06e6de0aa285",
+    "usuarioId": "145c06ff-3ead-4bb5-a989-4e8e68e7562f",
+    "cantidadLocalidades": 2,
+    "estado": "UTILIZADA",
+    "fechaReserva": "2025-12-31T03:32:13.665Z",
+    "createdAt": "2025-12-31T03:32:13.665Z",
+    "updatedAt": "2025-12-31T03:36:58.960Z",
+    "fechaPago": "2025-12-31T03:34:37.235Z",
+    "fechaUso": "2025-12-31T03:36:58.960Z"
+  }
+]

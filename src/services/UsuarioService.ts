@@ -1,0 +1,56 @@
+import { randomUUID } from "crypto";
+import { Usuario } from "../models/Usuario";
+import { UsuarioEstado } from "../models/enums/usuarioEstado";
+import { UsuarioRepository } from "../repositories/UsuarioRepository";
+
+interface CreateUsuarioDTO {
+  nombre: string;
+  apellido: string;
+  fechaNacimiento: string; // ISO
+  email: string;
+}
+
+export class UsuarioService {
+  constructor(private usuarioRepository: UsuarioRepository) {}
+
+  // Genera un código único para el usuario
+  private generateUserCode(): string {
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `USR-${random}`;
+  }
+
+  async listarUsuarios(): Promise<Usuario[]> {
+    return this.usuarioRepository.findAll();
+  }
+
+  async obtenerUsuario(id: string): Promise<Usuario | null> {
+    return this.usuarioRepository.findById(id);
+  }
+
+  private generateId = (): string => randomUUID();
+
+  // Creación de un nuevo usuario
+  async crearUsuario(data: CreateUsuarioDTO): Promise<Usuario> {
+    const existing = await this.usuarioRepository.findByEmail(data.email);
+    if (existing && existing.estado === UsuarioEstado.ACTIVO) {
+      throw new Error("Ya existe un usuario activo con ese email");
+    }
+
+    const nowIso = new Date().toISOString();
+
+    const usuario: Usuario = {
+      id: this.generateId(),
+      codigo: this.generateUserCode(),
+      nombre: data.nombre,
+      apellido: data.apellido,
+      fechaNacimiento: data.fechaNacimiento,
+      email: data.email,
+      estado: UsuarioEstado.ACTIVO,
+      createdAt: nowIso,
+      updatedAt: nowIso,
+    };
+
+    await this.usuarioRepository.save(usuario);
+    return usuario;
+  }
+}

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "145c06ff-3ead-4bb5-a989-4e8e68e7562f",
+    "codigo": "USR-M2L01Z",
+    "nombre": "Matias",
+    "apellido": "Morales",
+    "fechaNacimiento": "1990-07-21T00:00:00.000Z",
+    "email": "matimorales721@gmail.com",
+    "estado": "ACTIVO",
+    "createdAt": "2025-12-31T01:10:15.747Z",
+    "updatedAt": "2025-12-31T01:10:15.747Z"
+  },
+  {
+    "id": "5bbd7d6a-9af2-4375-817d-555028d9be20",
+    "codigo": "USR-WW30NO",
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "fechaNacimiento": "1990-05-15",
+    "email": "juan.perez@example.com",
+    "estado": "ACTIVO",
+    "createdAt": "2025-12-31T03:24:05.188Z",
+    "updatedAt": "2025-12-31T03:24:05.188Z"
+  }
+]
