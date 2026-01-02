@@ -2,11 +2,15 @@ import { Router } from "express";
 import { EventoController } from "../controllers/EventoController";
 import { EventoService } from "../services/EventoService";
 import { FileEventRepository } from "../persistence/file/FileEventRepository";
+import { MySQLEventRepository } from "../persistence/db/MySQLEventRepository";
 
 const router = Router();
 
 // Inicialización de repositorios, servicios y controladores
-const eventoRepository = new FileEventRepository(); // En esta primera version, usamos repositorios basados en archivos
+// Elige UNO de los siguientes repositorios:
+//const eventoRepository = new FileEventRepository();  // Repositorio basado en archivos JSON
+const eventoRepository = new MySQLEventRepository();  // Repositorio basado en MySQL
+
 const eventoService = new EventoService(eventoRepository);
 const eventoController = new EventoController(eventoService);
 

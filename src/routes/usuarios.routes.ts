@@ -2,11 +2,15 @@ import { Router } from "express";
 import { UsuarioController } from "../controllers/UsuarioController";
 import { UsuarioService } from "../services/UsuarioService";
 import { FileUserRepository } from "../persistence/file/FileUserRepository";
+import { MySQLUserRepository } from "../persistence/db/MySQLUserRepository";
 
 const router = Router();
 
 // Inicialización de repositorios, servicios y controladores
-const usuarioRepository = new FileUserRepository(); // En esta primera version, usamos repositorios basados en archivos
+// Elige UNO de los siguientes repositorios:
+const usuarioRepository = new FileUserRepository();  // Repositorio basado en archivos JSON
+// const usuarioRepository = new MySQLUserRepository();  // Repositorio basado en MySQL
+
 const usuarioService = new UsuarioService(usuarioRepository);
 const usuarioController = new UsuarioController(usuarioService);
 

@@ -38,7 +38,7 @@ export class EventoService {
       updatedAt: ahoraISO,
     };
 
-    await this.eventoRepository.save(evento);
+    await this.eventoRepository.agregarEvento(evento);
     return evento;
   }
 

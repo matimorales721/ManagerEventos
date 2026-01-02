@@ -21,7 +21,7 @@ export class FileEventRepository implements EventoRepository {
     return this.load();
   }
 
-  async save(evento: Evento): Promise<void> {
+  async agregarEvento(evento: Evento): Promise<void> {
     const eventos = await this.load();
     eventos.push(evento);
     await this.saveAll(eventos);

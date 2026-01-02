@@ -33,8 +33,10 @@ API REST para la gestión de eventos y venta de entradas. Permite:
 - **Node.js**
 - **Express.js** v5.2.1
 - **TypeScript** v5.9.3
+- **MySQL2** v3.16.0
+- **dotenv** v16.4.7
 - **ts-node-dev** v2.0.0 (desarrollo)
-- Persistencia en archivos JSON
+- Persistencia en archivos JSON o MySQL (configurable)
 
 ---
 
@@ -43,6 +45,13 @@ API REST para la gestión de eventos y venta de entradas. Permite:
 ```bash
 # Instalar dependencias
 npm install
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales de MySQL
+
+# Crear base de datos (si usas MySQL)
+# Ejecutar el script database/schema.sql en tu servidor MySQL
 
 # Modo desarrollo
 npm run dev
@@ -53,6 +62,36 @@ npm run build
 # Ejecutar en producción
 npm start
 ```
+
+### Configuración de Persistencia
+
+El proyecto soporta dos modos de persistencia:
+
+#### Opción 1: Archivos JSON (por defecto)
+
+En cada archivo de rutas ([eventos.routes.ts](src/routes/eventos.routes.ts), [usuarios.routes.ts](src/routes/usuarios.routes.ts), [entradas.routes.ts](src/routes/entradas.routes.ts)), usa:
+
+```typescript
+const eventoRepository = new FileEventRepository();
+// const eventoRepository = new MySQLEventRepository();  // Comentado
+```
+
+#### Opción 2: MySQL
+
+1. Asegúrate de tener MySQL corriendo (puede ser via Docker)
+2. Ejecuta el script [database/schema.sql](database/schema.sql) para crear las tablas
+3. Configura tu archivo [.env](.env) con las credenciales:
+   ```env
+   DB_HOST=localhost
+   DB_USER=tu_usuario
+   DB_PASSWORD=tu_password
+   DB_NAME=ManagerEventosDB
+   ```
+4. En cada archivo de rutas, comenta los repositorios File y descomenta los MySQL:
+   ```typescript
+   // const eventoRepository = new FileEventRepository();
+   const eventoRepository = new MySQLEventRepository(); // Descomentado
+   ```
 
 ---
 
@@ -437,7 +476,7 @@ curl http://localhost:3000/entradas/abc123
 
 ```
 ManagerEventos/
-├── data/                    # Archivos JSON de persistencia
+├── data/                    # Archivos JSON de persistencia (modo File)
 │   ├── entradas.json
 │   ├── eventos.json
 │   └── usuarios.json
@@ -448,10 +487,14 @@ ManagerEventos/
 │   ├── controllers/        # Controladores de rutas
 │   ├── models/             # Interfaces y enums
 │   ├── persistence/        # Capa de persistencia
+│   │   ├── db/            # Repositorios MySQL
+│   │   └── file/          # Repositorios File JSON
 │   ├── repositories/       # Interfaces de repositorios
 │   ├── routes/             # Definición de rutas
 │   ├── services/           # Lógica de negocio
 │   └── utils/              # Utilidades
+├── .env                    # Variables de entorno (no versionado)
+├── .env.example            # Plantilla de variables de entorno
 ├── package.json
 └── tsconfig.json
 ```
@@ -464,10 +507,10 @@ ManagerEventos/
 - El sistema valida disponibilidad de cupo antes de permitir reservas.
 - Todos los IDs son UUIDs generados automáticamente.
 - Los códigos únicos se generan automáticamente para cada recurso.
-- La persistencia se realiza en archivos JSON en la carpeta `data/`.
+- **Persistencia dual**: El sistema puede usar archivos JSON o MySQL. Cambia entre ellos comentando/descomentando líneas en los archivos de rutas.
 
 - Ideas para seguir desarrollando:
-- - Hasta ahora ya crea Eventros, Usuarios, se pueden reservar entradas, y se puede verificar la entrada
+- - Hasta ahora ya crea Eventos, Usuarios, se pueden reservar entradas, y se puede verificar la entrada
 - - Mejorar el tema de la hora. Creé un dateHelper que me da la hora con el formato que quiero pero no me convence
 - - Implementar Vistas y Handlebars para tener un monolito
-- - Implementar la BD
+- - Implementar la BD => ya logré que se conecte a la BD, y de todas las entidades hice andar Eventos, me faltan los usuarios y las entradas y ya puedo sacar lo de los Files
