@@ -34,7 +34,7 @@ API REST para la gestión de eventos y venta de entradas. Permite:
 - **Express.js** v5.2.1
 - **TypeScript** v5.9.3
 - **MySQL2** v3.16.0
-- **dotenv** v16.4.7
+- **dotenv** v17.2.3
 - **ts-node-dev** v2.0.0 (desarrollo)
 - Persistencia en archivos JSON o MySQL (configurable)
 
@@ -509,8 +509,10 @@ ManagerEventos/
 - Los códigos únicos se generan automáticamente para cada recurso.
 - **Persistencia dual**: El sistema puede usar archivos JSON o MySQL. Cambia entre ellos comentando/descomentando líneas en los archivos de rutas.
 
+- Hitos:
+- - Hasta ahora ya expone los endpoints de Eventos, Usuarios, se pueden reservar entradas, y se puede verificar la entrada ✅
+- - Implementada la BD => ✅
+
 - Ideas para seguir desarrollando:
-- - Hasta ahora ya crea Eventos, Usuarios, se pueden reservar entradas, y se puede verificar la entrada
-- - Mejorar el tema de la hora. Creé un dateHelper que me da la hora con el formato que quiero pero no me convence
 - - Implementar Vistas y Handlebars para tener un monolito
-- - Implementar la BD => ya logré que se conecte a la BD, y de todas las entidades hice andar Eventos, me faltan los usuarios y las entradas y ya puedo sacar lo de los Files
+- - Mejorar el tema de la hora. Creé un dateHelper que me da la hora con el formato que quiero pero no me convence
