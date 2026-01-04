@@ -5,6 +5,7 @@ export interface EntradaRepository {
   findByCodigo(codigo: string): Promise<Entrada | null>;
   findAll(): Promise<Entrada[]>;
   findByEventoId(eventoId: string): Promise<Entrada[]>;
+  findByUsuarioId(usuarioId: string): Promise<Entrada[]>;
   save(entrada: Entrada): Promise<void>;
   update(entrada: Entrada): Promise<void>;
 }

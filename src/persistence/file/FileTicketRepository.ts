@@ -31,6 +31,11 @@ export class FileTicketRepository implements EntradaRepository {
     return entradas.filter((e) => e.eventoId === eventoId);
   }
 
+  async findByUsuarioId(usuarioId: string): Promise<Entrada[]> {
+    const entradas = await this.load();
+    return entradas.filter((e) => e.usuarioId === usuarioId);
+  }
+
   async save(entrada: Entrada): Promise<void> {
     const entradas = await this.load();
     entradas.push(entrada);

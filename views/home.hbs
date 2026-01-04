@@ -1,0 +1,61 @@
+<div class="text-center mb-5">
+    <h1 class="display-4">Bienvenido</h1>
+    <p class="lead">Sistema de Reservas para tus Eventos Favoritos</p>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-6 mb-3 mb-lg-0">
+        <div class="search-box">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchEventos" class="form-control" placeholder="¿Qué evento buscas?">
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="btn-group w-100" role="group">
+            <a href="/?filtro=TODOS" class="btn btn-outline-primary {{#if (eq filtroActual 'TODOS')}}active{{/if}}">
+                <i class="bi bi-list"></i> Todos
+            </a>
+            <a href="/?filtro=ACTIVO" class="btn btn-outline-success {{#if (eq filtroActual 'ACTIVO')}}active{{/if}}">
+                <i class="bi bi-play-circle"></i> Activos
+            </a>
+            <a href="/?filtro=FINALIZADO" class="btn btn-outline-secondary {{#if (eq filtroActual 'FINALIZADO')}}active{{/if}}">
+                <i class="bi bi-check-circle"></i> Finalizados
+            </a>
+            <a href="/?filtro=CANCELADO" class="btn btn-outline-danger {{#if (eq filtroActual 'CANCELADO')}}active{{/if}}">
+                <i class="bi bi-x-circle"></i> Cancelados
+            </a>
+        </div>
+    </div>
+</div>
+
+{{#if eventos.length}}
+<div class="row g-4" id="eventosContainer">
+    {{#each eventos}}
+    <div class="col-md-6 col-lg-4" data-evento-nombre="{{this.nombre}}" data-evento-estado="{{this.estado}}">
+        <div class="card card-evento h-100" onclick="window.location.href='/eventos/{{this.id}}'">
+            <div class="card-body">
+                <h5 class="card-title">{{this.nombre}}</h5>
+                <p class="card-text">
+                    <i class="bi bi-calendar3"></i> {{formatDate this.fechaHora}}
+                </p>
+                <p class="card-text">
+                    <i class="bi bi-people"></i> Cupo Total: {{this.cupoTotal}}
+                </p>
+                <p class="mb-0">
+                    <span class="badge {{#if (eq this.estado 'ACTIVO')}}bg-success{{else if (eq this.estado 'FINALIZADO')}}bg-secondary{{else}}bg-danger{{/if}}">
+                        {{this.estado}}
+                    </span>
+                    <small class="text-muted ms-2">{{this.codigo}}</small>
+                </p>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</div>
+{{else}}
+<div class="alert alert-info text-center">
+    <i class="bi bi-info-circle"></i> No hay eventos disponibles en este momento.
+</div>
+{{/if}}

@@ -45,6 +45,15 @@ export class MySQLTicketRepository implements EntradaRepository {
     return rows;
   }
 
+  async findByUsuarioId(usuarioId: string): Promise<Entrada[]> {
+    const [rows] = await pool.query<EntradaRow[]>(
+      "SELECT id, codigo, idEvento eventoId, idUsuario usuarioId, cantidadLocalidades, est.descripcion estado, fechaReserva, fechaPago, fechaUso, createdAt, updatedAt FROM Entradas e join EntradaEstados est ON e.idEstado = est.idEstado WHERE idUsuario = ? ORDER BY createdAt DESC",
+      [usuarioId]
+    );
+
+    return rows;
+  }
+
   async save(entrada: Entrada): Promise<void> {
     switch (entrada.estado) {
       case "NUEVA":

@@ -1,0 +1,62 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Aquí tiene los datos de su entrada</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <h5 class="mb-3">{{evento.nombre}}</h5>
+                        
+                        <p class="mb-2">
+                            <i class="bi bi-calendar3"></i> <strong>Fecha:</strong><br>
+                            <span class="ms-4">{{formatDate evento.fechaHora}}</span>
+                        </p>
+                        
+                        <p class="mb-2">
+                            <i class="bi bi-ticket-perforated"></i> <strong>Cantidad Localidades:</strong><br>
+                            <span class="ms-4">{{entrada.cantidadLocalidades}}</span>
+                        </p>
+                        
+                        <p class="mb-2">
+                            <strong>Estado:</strong>
+                            <span class="badge {{#if (eq entrada.estado 'ACTIVA')}}bg-success{{else if (eq entrada.estado 'UTILIZADA')}}bg-secondary{{else if (eq entrada.estado 'CANCELADA')}}bg-danger{{else}}bg-warning text-dark{{/if}} ms-2">
+                                {{entrada.estado}}
+                            </span>
+                        </p>
+                        
+                        {{#if entrada.fechaPago}}
+                        <p class="mb-2">
+                            <i class="bi bi-credit-card"></i> <strong>Fecha de pago:</strong><br>
+                            <span class="ms-4">{{formatDate entrada.fechaPago}}</span>
+                        </p>
+                        {{/if}}
+                        
+                        <p class="mb-3">
+                            <i class="bi bi-upc"></i> <strong>Código:</strong><br>
+                            <span class="ms-4 fs-5"><code>{{entrada.codigo}}</code></span>
+                        </p>
+                    </div>
+                    <div class="col-md-5 text-center">
+                        <div class="qr-mock">
+                            <i class="bi bi-qr-code"></i>
+                        </div>
+                        <p class="text-muted mt-2"><small>Código QR</small></p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="d-grid gap-2">
+                    <a href="/mis-entradas" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i> Volver a Mis Entradas
+                    </a>
+                    <a href="/" class="btn btn-outline-secondary">
+                        <i class="bi bi-house"></i> Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

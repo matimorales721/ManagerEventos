@@ -39,7 +39,7 @@ export class EntradaController {
   validarEntrada = async (req: Request, res: Response) => {
     try {
       const { codigo } = req.params;
-      const entrada = await this.entradaService.validarEntradaPorCodigo(codigo);
+      const entrada = await this.entradaService.validarEntrada(codigo);
       return res.json(entrada);
     } catch (err: any) {
       console.error(err);

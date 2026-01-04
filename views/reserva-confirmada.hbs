@@ -1,0 +1,43 @@
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        {{#if entrada}}
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-check-circle-fill"></i> ¡Felicitaciones!
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">Se ha reservado su/s entrada/s</p>
+                
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Evento:</strong> {{evento.nombre}} - {{evento.codigo}}</p>
+                    <p class="mb-1"><strong>Cantidad de Localidades:</strong> {{entrada.cantidadLocalidades}}</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> 
+                    Tu reserva está <strong>PENDIENTE DE PAGO</strong>. 
+                    Completa el pago para activar tus entradas.
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="/entradas/{{entrada.id}}/pagar" class="btn btn-success btn-lg">
+                        <i class="bi bi-credit-card"></i> Ir a Realizar Pago
+                    </a>
+                    <a href="/mis-entradas" class="btn btn-outline-primary">
+                        <i class="bi bi-ticket-perforated"></i> Ver Mis Entradas
+                    </a>
+                    <a href="/" class="btn btn-outline-secondary">
+                        <i class="bi bi-house"></i> Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> No se pudo completar la reserva.
+        </div>
+        {{/if}}
+    </div>
+</div>

@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { Usuario } from "../models/Usuario";
 import { UsuarioEstado } from "../models/enums/usuarioEstado";
+import { UsuarioRol } from "../models/enums/usuarioRol";
 import { UsuarioRepository } from "../repositories/UsuarioRepository";
 import { newDate } from "../utils/dateHelper";
 
@@ -9,6 +10,7 @@ interface CreateUsuarioDTO {
   apellido: string;
   fechaNacimiento: string; // ISO
   email: string;
+  rol?: UsuarioRol;
 }
 
 export class UsuarioService {
@@ -47,6 +49,7 @@ export class UsuarioService {
       apellido: data.apellido,
       fechaNacimiento: data.fechaNacimiento,
       email: data.email,
+      rol: data.rol || UsuarioRol.NORMAL,
       estado: UsuarioEstado.ACTIVO,
       createdAt: ahoraISO,
       updatedAt: ahoraISO,

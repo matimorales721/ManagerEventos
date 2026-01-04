@@ -43,11 +43,20 @@ export class EntradaService {
     return this.entradaRepository.findById(id);
   }
 
+  async obtenerEntradaPorCodigo(codigo: string): Promise<Entrada | null> {
+    return this.entradaRepository.findByCodigo(codigo);
+  }
+
+  async listarEntradasPorUsuario(usuarioId: string): Promise<Entrada[]> {
+    return this.entradaRepository.findByUsuarioId(usuarioId);
+  }
+
   private generateId = (): string => randomUUID();
 
   // Reserva de entradas
   async reservarEntrada(data: ReservarEntradaDTO): Promise<Entrada> {
     
+    //console.log("Reservando entrada con datos:", data);
     const evento = await this.eventoRepository.findById(data.eventoId);
     
     if (!evento) {
@@ -101,7 +110,7 @@ export class EntradaService {
     };
 
     await this.entradaRepository.save(entrada);
-    console.log("Entrada reservada:", entrada);
+    //console.log("Entrada reservada:", entrada);
     return entrada;
   }
 
@@ -145,7 +154,7 @@ export class EntradaService {
   }
 
   // Validación de entradas
-  async validarEntradaPorCodigo(codigo: string): Promise<Entrada> {
+  async validarEntrada(codigo: string): Promise<Entrada> {
     const entrada = await this.entradaRepository.findByCodigo(codigo);
     if (!entrada) {
       throw new Error("Entrada no encontrada");

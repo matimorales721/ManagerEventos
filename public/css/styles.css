@@ -1,0 +1,93 @@
+/* Custom styles for Manager de Eventos */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.card-evento {
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.card-evento:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.badge-estado {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.qr-mock {
+    width: 150px;
+    height: 150px;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    border-radius: 8px;
+}
+
+.qr-mock i {
+    font-size: 100px;
+    color: #adb5bd;
+}
+
+.entrada-card {
+    border-left: 4px solid #0d6efd;
+}
+
+.entrada-card.activa {
+    border-left-color: #198754;
+}
+
+.entrada-card.utilizada {
+    border-left-color: #6c757d;
+}
+
+.entrada-card.cancelada {
+    border-left-color: #dc3545;
+}
+
+.entrada-card.nueva {
+    border-left-color: #ffc107;
+}
+
+.btn-pagar {
+    background: linear-gradient(45deg, #0099ff, #00cc99);
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+
+.btn-pagar:hover {
+    background: linear-gradient(45deg, #0077cc, #009977);
+    color: white;
+}
+
+.search-box {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.filter-buttons .btn-check:checked + .btn {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white !important;
+}
+
+/* Filtros de estado en home */
+.btn-group .btn.active {
+    background-color: var(--bs-btn-active-bg) !important;
+    border-color: var(--bs-btn-active-border-color) !important;
+    color: var(--bs-btn-active-color) !important;
+}

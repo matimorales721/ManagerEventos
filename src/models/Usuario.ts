@@ -1,4 +1,5 @@
 import { UsuarioEstado } from "./enums/usuarioEstado";
+import { UsuarioRol } from "./enums/usuarioRol";
 
 export interface Usuario {
   id: string;
@@ -7,6 +8,7 @@ export interface Usuario {
   apellido: string;
   fechaNacimiento: string; // ISO
   email: string;
+  rol: UsuarioRol;
   estado: UsuarioEstado;
   createdAt: string;
   updatedAt: string;

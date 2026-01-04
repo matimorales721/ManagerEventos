@@ -1,0 +1,75 @@
+<div class="mb-4">
+    <h2>Mis Entradas</h2>
+    <p class="text-muted">{{user.nombre}} {{user.apellido}}</p>
+</div>
+
+<div class="filter-buttons mb-4 text-center">
+    <div class="btn-group" role="group">
+        <input type="radio" class="btn-check" name="filterEntradas" id="filterTodas" value="todas" checked>
+        <label class="btn btn-outline-primary" for="filterTodas">Todas</label>
+
+        <input type="radio" class="btn-check" name="filterEntradas" id="filterActivas" value="ACTIVA">
+        <label class="btn btn-outline-success" for="filterActivas">Activas</label>
+
+        <input type="radio" class="btn-check" name="filterEntradas" id="filterPendientes" value="NUEVA">
+        <label class="btn btn-outline-warning" for="filterPendientes">Pendientes</label>
+
+        <input type="radio" class="btn-check" name="filterEntradas" id="filterPasadas" value="UTILIZADA">
+        <label class="btn btn-outline-secondary" for="filterPasadas">Pasadas</label>
+    </div>
+</div>
+
+{{#if entradas.length}}
+<div class="row g-3">
+    {{#each entradas}}
+    <div class="col-12" data-estado="{{this.estado}}">
+        <div class="card entrada-card {{#if (eq this.estado 'ACTIVA')}}activa{{else if (eq this.estado 'UTILIZADA')}}utilizada{{else if (eq this.estado 'CANCELADA')}}cancelada{{else}}nueva{{/if}}">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="card-title mb-2">{{this.evento.nombre}}</h5>
+                        <p class="mb-1">
+                            <i class="bi bi-calendar3"></i> <strong>Fecha:</strong> {{formatDate this.evento.fechaHora}}
+                        </p>
+                        <p class="mb-1">
+                            <i class="bi bi-ticket-perforated"></i> <strong>Cantidad Localidades:</strong> {{this.cantidadLocalidades}}
+                        </p>
+                        <p class="mb-1">
+                            <strong>Estado:</strong>
+                            <span class="badge {{#if (eq this.estado 'ACTIVA')}}bg-success{{else if (eq this.estado 'NUEVA')}}bg-warning text-dark{{else if (eq this.estado 'UTILIZADA')}}bg-secondary{{else}}bg-danger{{/if}}">
+                                {{#if (eq this.estado 'NUEVA')}}PENDIENTE DE PAGO{{else}}{{this.estado}}{{/if}}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        {{#if (eq this.estado 'NUEVA')}}
+                        <a href="/entradas/{{this.id}}/pagar" class="btn btn-warning mb-2">
+                            <i class="bi bi-credit-card"></i> Ir a Realizar Pago
+                        </a>
+                        {{/if}}
+                        {{#if (eq this.estado 'ACTIVA')}}
+                        <a href="/entradas/{{this.id}}" class="btn btn-success mb-2">
+                            <i class="bi bi-eye"></i> Ver Entrada
+                        </a>
+                        {{/if}}
+                        {{#if (eq this.estado 'UTILIZADA')}}
+                        <a href="/entradas/{{this.id}}" class="btn btn-secondary mb-2">
+                            <i class="bi bi-info-circle"></i> Ver Detalles
+                        </a>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</div>
+{{else}}
+<div class="alert alert-info text-center">
+    <i class="bi bi-info-circle"></i> No tienes entradas reservadas aún.
+    <hr>
+    <a href="/" class="btn btn-primary">
+        <i class="bi bi-search"></i> Buscar Eventos
+    </a>
+</div>
+{{/if}}

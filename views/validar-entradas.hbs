@@ -1,0 +1,162 @@
+<div class="mb-4">
+    <h2>Sistema de Reservas para tus Eventos Favoritos ADMIN</h2>
+    <p class="text-muted">Validar Entradas</p>
+</div>
+
+{{#unless user}}
+<div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle"></i> No tienes permisos para acceder a esta página.
+</div>
+{{else}}
+{{#if (eq user.rol 'NORMAL')}}
+<div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle"></i> Solo administradores pueden validar entradas.
+</div>
+{{else}}
+
+<div class="row justify-content-center mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form id="formValidarEntrada" action="/validar-entradas/buscar" method="POST">
+                    <div class="mb-3">
+                        <label for="eventoId" class="form-label"><strong>Evento:</strong></label>
+                        <select class="form-select" id="eventoId" name="eventoId" required>
+                            <option value="">Seleccione un evento...</option>
+                            {{#each eventos}}
+                            <option value="{{this.id}}" {{#if ../selectedEventoId}}{{#if (eq this.id ../selectedEventoId)}}selected{{/if}}{{/if}}>
+                                {{this.nombre}} - {{this.codigo}}
+                            </option>
+                            {{/each}}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="codigoEntrada" class="form-label"><strong>Inserta el código o escanea el QR:</strong></label>
+                        <div class="input-group">
+                            <span class="input-group-text">ENT-</span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="codigoEntrada" 
+                                   name="codigoEntrada" 
+                                   placeholder="Código de entrada"
+                                   required>
+                        </div>
+                        <div class="form-text">Introduce el código sin el prefijo ENT-</div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#if entrada}}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg border-{{#if (eq entrada.estado 'ACTIVA')}}success{{else if (eq entrada.estado 'UTILIZADA')}}secondary{{else}}danger{{/if}}">
+            <div class="card-header bg-{{#if (eq entrada.estado 'ACTIVA')}}success{{else if (eq entrada.estado 'UTILIZADA')}}secondary{{else}}danger{{/if}} text-white">
+                <h4 class="mb-0">
+                    {{#if (eq entrada.estado 'ACTIVA')}}
+                    <i class="bi bi-check-circle-fill"></i> Reserva Confirmada
+                    {{else if (eq entrada.estado 'UTILIZADA')}}
+                    <i class="bi bi-check-all"></i> Entrada Verificada
+                    {{else}}
+                    <i class="bi bi-x-circle-fill"></i> Entrada No Válida
+                    {{/if}}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Código:</strong> {{entrada.codigo}}</p>
+                    <p class="mb-1"><strong>Evento:</strong> {{evento.nombre}} - {{evento.codigo}}</p>
+                    <p class="mb-1"><strong>Cantidad de Localidades:</strong> {{entrada.cantidadLocalidades}}</p>
+                    {{#if precioTotal}}
+                    <p class="mb-1"><strong>Precio Total:</strong> ${{precioTotal}}</p>
+                    {{/if}}
+                    {{#if entrada.fechaPago}}
+                    <p class="mb-1"><strong>Fecha Pago:</strong> {{formatDate entrada.fechaPago}}</p>
+                    {{/if}}
+                    <p class="mb-1">
+                        <strong>Estado:</strong>
+                        <span class="badge {{#if (eq entrada.estado 'ACTIVA')}}bg-success{{else if (eq entrada.estado 'UTILIZADA')}}bg-secondary{{else}}bg-danger{{/if}}">
+                            {{entrada.estado}}
+                        </span>
+                    </p>
+                </div>
+
+                {{#if (eq entrada.estado 'ACTIVA')}}
+                <form action="/validar-entradas/{{entrada.codigo}}" method="POST">
+                    <input type="hidden" name="eventoId" value="{{selectedEventoId}}">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg btn-validar-entrada">
+                            <i class="bi bi-check-circle"></i> Verificar <i class="bi bi-check-circle"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="window.location.reload()">
+                            <i class="bi bi-arrow-left"></i> Nueva Búsqueda →
+                        </button>
+                    </div>
+                </form>
+                {{else if (eq entrada.estado 'UTILIZADA')}}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Esta entrada ya fue utilizada anteriormente.
+                </div>
+                <button type="button" class="btn btn-outline-secondary w-100" onclick="window.location.reload()">
+                    <i class="bi bi-arrow-left"></i> Nueva Búsqueda →
+                </button>
+                {{else}}
+                <div class="alert alert-danger">
+                    <i class="bi bi-x-circle"></i> Esta entrada no está activa.
+                </div>
+                <button type="button" class="btn btn-outline-secondary w-100" onclick="window.location.reload()">
+                    <i class="bi bi-arrow-left"></i> Nueva Búsqueda →
+                </button>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+{{/if}}
+
+{{#if entradaValidada}}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg border-success">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-check-circle-fill"></i> Entrada Verificada <i class="bi bi-check-circle-fill"></i>
+                </h4>
+            </div>
+            <div class="card-body text-center">
+                <h5 class="mb-3">La entrada ha sido validada exitosamente</h5>
+                
+                <div class="mb-3 text-start">
+                    <p class="mb-1"><strong>Código:</strong> {{entradaValidada.codigo}}</p>
+                    <p class="mb-1"><strong>Evento:</strong> {{eventoValidado.nombre}}</p>
+                    <p class="mb-1"><strong>Cantidad de Localidades:</strong> {{entradaValidada.cantidadLocalidades}}</p>
+                    {{#if precioTotalValidado}}
+                    <p class="mb-1"><strong>Precio Total:</strong> ${{precioTotalValidado}}</p>
+                    {{/if}}
+                    {{#if entradaValidada.fechaPago}}
+                    <p class="mb-1"><strong>Fecha Pago:</strong> {{formatDate entradaValidada.fechaPago}}</p>
+                    {{/if}}
+                </div>
+
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='/validar-entradas?eventoId={{selectedEventoId}}'">
+                        <i class="bi bi-arrow-left"></i> Nueva Búsqueda →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{/if}}
+
+{{/if}}
+{{/unless}}

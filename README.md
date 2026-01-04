@@ -1,13 +1,15 @@
-# API - Manager de Eventos
+# Manager de Eventos
 
-Sistema de gestión de eventos, usuarios y entradas desarrollado con Node.js, Express y TypeScript.
+Sistema de gestión de eventos, usuarios y entradas desarrollado con Node.js, Express, TypeScript y Handlebars.
 
 ## Tabla de Contenidos
 
 - [Información General](#información-general)
+- [Características](#características)
 - [Tecnologías](#tecnologías)
 - [Instalación](#instalación)
-- [Endpoints](#endpoints)
+- [Vistas Web](#vistas-web)
+- [API REST](#api-rest)
   - [Usuarios](#usuarios)
   - [Eventos](#eventos)
   - [Entradas](#entradas)
@@ -17,14 +19,33 @@ Sistema de gestión de eventos, usuarios y entradas desarrollado con Node.js, Ex
 
 ## Información General
 
-API REST para la gestión de eventos y venta de entradas. Permite:
-
-- Crear y gestionar usuarios
-- Crear y listar eventos
-- Reservar, pagar y validar entradas
-- Cancelar entradas vencidas automáticamente
+Aplicación completa para la gestión de eventos y venta de entradas con:
+- **Frontend Web**: Interfaz de usuario con Handlebars y Bootstrap
+- **API REST**: Endpoints para integración con otros sistemas
 
 **URL Base:** `http://localhost:3000`
+
+---
+
+## Características
+
+### Para Usuarios
+- 🎫 Explorar eventos disponibles con buscador en tiempo real
+- 📝 Reservar entradas para eventos
+- 💳 Pago simulado de entradas reservadas
+- 📱 Visualizar entradas con código QR (mock)
+- 📋 Gestionar mis entradas con filtros (Activas, Pendientes, Pasadas)
+
+### Para Administradores
+- ✅ Validar entradas por código o escaneo de QR
+- 🔍 Buscar entradas por evento
+- 📊 Ver detalles completos de cada entrada
+
+### Sistema
+- 🔄 Cancelación automática de entradas vencidas
+- 📧 Notificaciones por email (simuladas)
+- 🎨 Interfaz responsive con Bootstrap 5
+- 🔐 Roles de usuario (Normal/Admin)
 
 ---
 
@@ -33,10 +54,12 @@ API REST para la gestión de eventos y venta de entradas. Permite:
 - **Node.js**
 - **Express.js** v5.2.1
 - **TypeScript** v5.9.3
-- **MySQL2** v3.16.0
+- **Handlebars** (express-handlebars) - Motor de plantillas
+- **Bootstrap** v5.3.0 - Framework CSS
+- **MySQL2** v3.16.0 - Base de datos
 - **dotenv** v17.2.3
+- **express-session** - Manejo de sesiones
 - **ts-node-dev** v2.0.0 (desarrollo)
-- Persistencia en archivos JSON o MySQL (configurable)
 
 ---
 
@@ -50,7 +73,7 @@ npm install
 cp .env.example .env
 # Editar .env con tus credenciales de MySQL
 
-# Crear base de datos (si usas MySQL)
+# Crear base de datos MySQL
 # Ejecutar el script database/schema.sql en tu servidor MySQL
 
 # Modo desarrollo
@@ -63,39 +86,61 @@ npm run build
 npm start
 ```
 
-### Configuración de Persistencia
+### Configuración de Base de Datos
 
-El proyecto soporta dos modos de persistencia:
+El proyecto utiliza **MySQL** como base de datos:
 
-#### Opción 1: Archivos JSON (por defecto)
-
-En cada archivo de rutas ([eventos.routes.ts](src/routes/eventos.routes.ts), [usuarios.routes.ts](src/routes/usuarios.routes.ts), [entradas.routes.ts](src/routes/entradas.routes.ts)), usa:
-
-```typescript
-const eventoRepository = new FileEventRepository();
-// const eventoRepository = new MySQLEventRepository();  // Comentado
-```
-
-#### Opción 2: MySQL
-
-1. Asegúrate de tener MySQL corriendo (puede ser via Docker)
+1. Asegúrate de tener MySQL corriendo
 2. Ejecuta el script [database/schema.sql](database/schema.sql) para crear las tablas
-3. Configura tu archivo [.env](.env) con las credenciales:
+3. Configura tu archivo `.env` con las credenciales:
    ```env
    DB_HOST=localhost
    DB_USER=tu_usuario
    DB_PASSWORD=tu_password
    DB_NAME=ManagerEventosDB
    ```
-4. En cada archivo de rutas, comenta los repositorios File y descomenta los MySQL:
-   ```typescript
-   // const eventoRepository = new FileEventRepository();
-   const eventoRepository = new MySQLEventRepository(); // Descomentado
-   ```
+
+### Usuario Mockeado
+
+Por defecto, el sistema utiliza un usuario mockeado para pruebas:
+
+- **Usuario Normal**: Juan Pérez (juan.perez@example.com)
+- **Usuario Admin**: Admin Sistema (admin@example.com)
+
+Puedes cambiar entre ellos agregando `?admin=true` a la URL o desde el menú del navbar.
 
 ---
 
-## Endpoints
+## Vistas Web
+
+### Páginas Disponibles
+
+#### Para Usuarios Normales
+
+- **`/`** - Home: Lista de eventos con buscador
+- **`/eventos/:id`** - Detalle de evento
+- **`/eventos/:id/reservar`** - Formulario de reserva
+- **`/entradas/:id/pagar`** - Página de pago
+- **`/mis-entradas`** - Mis entradas con filtros
+- **`/entradas/:id`** - Detalle de entrada con QR
+
+#### Para Administradores
+
+- **`/validar-entradas`** - Validar entradas por código
+
+### Navegación
+
+La aplicación incluye una barra de navegación con:
+- Enlace a Home
+- Enlace a Mis Entradas
+- Enlace a Validar Entradas (solo para admins)
+- Dropdown de usuario con opción para cambiar entre usuario normal y admin
+
+---
+
+## API REST
+
+Los endpoints de la API REST siguen disponibles para integración con otros sistemas.
 
 ### Usuarios
 
@@ -476,23 +521,57 @@ curl http://localhost:3000/entradas/abc123
 
 ```
 ManagerEventos/
-├── data/                    # Archivos JSON de persistencia (modo File)
-│   ├── entradas.json
-│   ├── eventos.json
-│   └── usuarios.json
+├── database/                # Scripts SQL
+│   └── schema.sql          # Schema de MySQL
+├── public/                  # Archivos estáticos
+│   ├── css/                # Estilos personalizados
+│   ├── js/                 # JavaScript del cliente
+│   └── images/             # Imágenes
 ├── src/
-│   ├── app.ts              # Configuración de Express
+│   ├── app.ts              # Configuración de Express y Handlebars
 │   ├── server.ts           # Punto de entrada
 │   ├── config/             # Configuraciones
-│   ├── controllers/        # Controladores de rutas
+│   ├── controllers/        # Controladores (API y Vistas)
+│   │   ├── EntradaController.ts
+│   │   ├── EventoController.ts
+│   │   ├── UsuarioController.ts
+│   │   └── ViewController.ts  # Controlador de vistas web
+│   ├── middleware/         # Middlewares
+│   │   └── mockUser.ts     # Usuario mockeado
 │   ├── models/             # Interfaces y enums
+│   │   ├── Entrada.ts
+│   │   ├── Evento.ts
+│   │   ├── Usuario.ts
+│   │   └── enums/
+│   │       ├── entradaEstado.ts
+│   │       ├── eventoEstado.ts
+│   │       ├── usuarioEstado.ts
+│   │       └── usuarioRol.ts  # Roles (NORMAL/ADMIN)
 │   ├── persistence/        # Capa de persistencia
-│   │   ├── db/            # Repositorios MySQL
-│   │   └── file/          # Repositorios File JSON
+│   │   └── db/             # Repositorios MySQL
 │   ├── repositories/       # Interfaces de repositorios
 │   ├── routes/             # Definición de rutas
+│   │   ├── entradas.routes.ts
+│   │   ├── eventos.routes.ts
+│   │   ├── usuarios.routes.ts
+│   │   └── views.routes.ts    # Rutas de vistas web
 │   ├── services/           # Lógica de negocio
 │   └── utils/              # Utilidades
+├── views/                   # Plantillas Handlebars
+│   ├── layouts/
+│   │   └── main.hbs        # Layout principal
+│   ├── partials/
+│   │   └── navbar.hbs      # Barra de navegación
+│   ├── home.hbs
+│   ├── evento.hbs
+│   ├── reservar-entrada.hbs
+│   ├── reserva-confirmada.hbs
+│   ├── pagar-entrada.hbs
+│   ├── pago-confirmado.hbs
+│   ├── mis-entradas.hbs
+│   ├── entrada-detalle.hbs
+│   ├── validar-entradas.hbs
+│   └── error.hbs
 ├── .env                    # Variables de entorno (no versionado)
 ├── .env.example            # Plantilla de variables de entorno
 ├── package.json
@@ -503,16 +582,35 @@ ManagerEventos/
 
 ## Notas
 
-- Las entradas reservadas (`NUEVA`) tienen un tiempo límite para ser pagadas antes de ser canceladas automáticamente.
+- Las entradas reservadas (`NUEVA`) tienen un tiempo límite de 24 horas para ser pagadas antes de ser canceladas automáticamente.
 - El sistema valida disponibilidad de cupo antes de permitir reservas.
 - Todos los IDs son UUIDs generados automáticamente.
 - Los códigos únicos se generan automáticamente para cada recurso.
-- **Persistencia dual**: El sistema puede usar archivos JSON o MySQL. Cambia entre ellos comentando/descomentando líneas en los archivos de rutas.
+- **Precio por localidad**: $5,000 (simulado)
+- **Usuario mockeado**: El sistema incluye un middleware que simula usuarios logueados para pruebas
 
-- Hitos:
-- - Hasta ahora ya expone los endpoints de Eventos, Usuarios, se pueden reservar entradas, y se puede verificar la entrada ✅
-- - Implementada la BD => ✅
+---
 
-- Ideas para seguir desarrollando:
-- - Implementar Vistas y Handlebars para tener un monolito
-- - Mejorar el tema de la hora. Creé un dateHelper que me da la hora con el formato que quiero pero no me convence
+## Hitos Completados
+
+- ✅ Endpoints REST de Eventos, Usuarios y Entradas
+- ✅ Implementación de MySQL como base de datos
+- ✅ Vistas web con Handlebars y Bootstrap
+- ✅ Sistema de roles (Normal/Admin)
+- ✅ Validación de entradas para administradores
+- ✅ Gestión completa del flujo de reserva y pago
+
+---
+
+## Ideas para Desarrollo Futuro
+
+- 🔐 Implementar autenticación real con JWT o sesiones
+- 💳 Integrar API real de MercadoPago
+- 📧 Envío de emails reales con confirmaciones
+- 📱 Generar códigos QR reales
+- 📊 Panel de administración completo
+- 📈 Estadísticas y reportes de eventos
+- 🎨 Mejorar diseño y UX
+- ⏰ Sistema de recordatorios para eventos próximos
+- 🔔 Notificaciones en tiempo real
+- 📱 Aplicación móvil nativa

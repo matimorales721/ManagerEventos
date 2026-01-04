@@ -1,0 +1,75 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">{{evento.nombre}}</h3>
+                <small>{{evento.codigo}}</small>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p class="mb-2">
+                            <i class="bi bi-calendar3"></i> <strong>Fecha y Hora:</strong><br>
+                            <span class="ms-4">{{formatDate evento.fechaHora}}</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-2">
+                            <i class="bi bi-people"></i> <strong>Cupo Total:</strong><br>
+                            <span class="ms-4">{{evento.cupoTotal}} localidades</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p class="mb-2">
+                            <i class="bi bi-ticket-detailed"></i> <strong>Disponibles:</strong><br>
+                            <span class="ms-4 {{#if disponibles}}text-success{{else}}text-danger{{/if}} fw-bold">
+                                {{disponibles}} localidades
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-2">
+                            <i class="bi bi-check-circle"></i> <strong>Reservadas:</strong><br>
+                            <span class="ms-4 text-muted">{{ocupadas}} localidades</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p class="mb-2">
+                        <i class="bi bi-info-circle"></i> <strong>Estado:</strong>
+                        <span class="badge {{#if (eq evento.estado 'ACTIVO')}}bg-success{{else if (eq evento.estado 'FINALIZADO')}}bg-secondary{{else}}bg-danger{{/if}} ms-2">
+                            {{evento.estado}}
+                        </span>
+                    </p>
+                </div>
+
+                <hr>
+
+                <div class="d-grid gap-2">
+                    {{#if (eq evento.estado 'ACTIVO')}}
+                    {{#if disponibles}}
+                    <a href="/eventos/{{evento.id}}/reservar" class="btn btn-primary btn-lg">
+                        <i class="bi bi-ticket-perforated"></i> Reservar Entradas
+                    </a>
+                    {{else}}
+                    <button class="btn btn-secondary btn-lg" disabled>
+                        <i class="bi bi-x-circle"></i> No Hay Localidades Disponibles
+                    </button>
+                    {{/if}}
+                    {{else}}
+                    <button class="btn btn-secondary btn-lg" disabled>
+                        <i class="bi bi-x-circle"></i> Evento No Disponible
+                    </button>
+                    {{/if}}
+                    <a href="/" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
