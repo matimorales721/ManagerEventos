@@ -4,65 +4,54 @@ import { UsuarioRepository } from "../../repositories/UsuarioRepository";
 import pool from "./mysql";
 import { UsuarioEstado } from "../../models/enums/usuarioEstado";
 
-interface UsuarioRow extends RowDataPacket {
-  id: string;
-  codigo: string;
-  nombre: string;
-  apellido: string;
-  fecha_nacimiento: Date;
-  email: string;
-  estado: UsuarioEstado;
-  created_at: Date;
-  updated_at: Date;
-}
+export type UsuarioRow = RowDataPacket & Usuario;
 
 export class MySQLUserRepository implements UsuarioRepository {
-  private mapRowToUsuario(row: UsuarioRow): Usuario {
-    return {
-      id: row.id,
-      codigo: row.codigo,
-      nombre: row.nombre,
-      apellido: row.apellido,
-      fechaNacimiento: row.fecha_nacimiento.toISOString().split('T')[0], // Solo la fecha
-      email: row.email,
-      estado: row.estado,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
+  
   async findById(id: string): Promise<Usuario | null> {
     const [rows] = await pool.query<UsuarioRow[]>(
-      "SELECT * FROM usuarios WHERE id = ?",
+      "SELECT id, codigo, nombre, apellido, fechaNacimiento, email, est.descripcion estado, createdAt, updatedAt FROM Usuarios join UsuarioEstados est WHERE id = ?",
       [id]
     );
     
     if (rows.length === 0) return null;
-    return this.mapRowToUsuario(rows[0]);
+    return rows[0];
   }
 
   async findByEmail(email: string): Promise<Usuario | null> {
     const [rows] = await pool.query<UsuarioRow[]>(
-      "SELECT * FROM usuarios WHERE email = ?",
+      "SELECT id, codigo, nombre, apellido, fechaNacimiento, email, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuarioEstados est on u.idEstado = est.idEstado WHERE email = ?",
       [email]
     );
     
     if (rows.length === 0) return null;
-    return this.mapRowToUsuario(rows[0]);
+    return rows[0];
   }
 
   async findAll(): Promise<Usuario[]> {
     const [rows] = await pool.query<UsuarioRow[]>(
-      "SELECT * FROM usuarios ORDER BY created_at DESC"
+      "SELECT id, codigo, nombre, apellido, fechaNacimiento, email, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuarioEstados est on u.idEstado = est.idEstado ORDER BY createdAt DESC"
     );
     
-    return rows.map(row => this.mapRowToUsuario(row));
+    return rows;
   }
 
   async save(usuario: Usuario): Promise<void> {
+
+    switch (usuario.estado) {
+      case 'ACTIVO':
+        var idEstado = 1;
+        break;
+      case 'BORRADO':
+        var idEstado = 2;
+        break;
+      default:
+        throw new Error("Estado de usuario inválido");
+    }
+
     await pool.query<ResultSetHeader>(
-      `INSERT INTO usuarios 
-       (id, codigo, nombre, apellido, fecha_nacimiento, email, estado, created_at, updated_at) 
+      `INSERT INTO Usuarios 
+       (id, codigo, nombre, apellido, fechaNacimiento, email, idEstado, createdAt, updatedAt) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         usuario.id,
@@ -71,7 +60,7 @@ export class MySQLUserRepository implements UsuarioRepository {
         usuario.apellido,
         new Date(usuario.fechaNacimiento),
         usuario.email,
-        usuario.estado,
+        idEstado,
         new Date(usuario.createdAt),
         new Date(usuario.updatedAt),
       ]
@@ -79,18 +68,29 @@ export class MySQLUserRepository implements UsuarioRepository {
   }
 
   async update(usuario: Usuario): Promise<void> {
+    
+    switch (usuario.estado) {
+      case 'ACTIVO':
+        var idEstado = 1;
+        break;
+      case 'BORRADO':
+        var idEstado = 2;
+        break;
+      default:
+        throw new Error("Estado de usuario inválido");
+    }
+
     const [result] = await pool.query<ResultSetHeader>(
-      `UPDATE usuarios 
-       SET codigo = ?, nombre = ?, apellido = ?, fecha_nacimiento = ?, 
-           email = ?, estado = ?, updated_at = ? 
+      `UPDATE Usuarios 
+       SET nombre = ?, apellido = ?, fechaNacimiento = ?, 
+           email = ?, idEstado = ?, updatedAt = ? 
        WHERE id = ?`,
       [
-        usuario.codigo,
         usuario.nombre,
         usuario.apellido,
         new Date(usuario.fechaNacimiento),
         usuario.email,
-        usuario.estado,
+        idEstado,
         new Date(usuario.updatedAt),
         usuario.id,
       ]

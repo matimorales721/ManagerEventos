@@ -14,14 +14,14 @@ const router = Router();
 // Elige UNO de los siguientes conjuntos de repositorios:
 
 // Opción 1: Repositorios basados en archivos JSON
-const entradaRepository = new FileTicketRepository();
-const eventoRepository = new FileEventRepository();
-const usuarioRepository = new FileUserRepository();
+// const entradaRepository = new FileTicketRepository();
+// const eventoRepository = new FileEventRepository();
+// const usuarioRepository = new FileUserRepository();
 
 // Opción 2: Repositorios basados en MySQL (descomenta estas líneas y comenta las de arriba)
-// const entradaRepository = new MySQLTicketRepository();
-// const eventoRepository = new MySQLEventRepository();
-// const usuarioRepository = new MySQLUserRepository();
+const entradaRepository = new MySQLTicketRepository();
+const eventoRepository = new MySQLEventRepository();
+const usuarioRepository = new MySQLUserRepository();
 
 const entradaService = new EntradaService(
   entradaRepository,

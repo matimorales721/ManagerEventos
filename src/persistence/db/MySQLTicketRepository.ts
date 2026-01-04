@@ -4,79 +4,69 @@ import { EntradaRepository } from "../../repositories/EntradaRepository";
 import pool from "./mysql";
 import { EntradaEstado } from "../../models/enums/entradaEstado";
 
-interface EntradaRow extends RowDataPacket {
-  id: string;
-  codigo: string;
-  evento_id: string;
-  usuario_id: string;
-  cantidad_localidades: number;
-  estado: EntradaEstado;
-  fecha_reserva: Date;
-  fecha_pago: Date | null;
-  fecha_uso: Date | null;
-  created_at: Date;
-  updated_at: Date;
-}
+export type EntradaRow = RowDataPacket & Entrada;
 
 export class MySQLTicketRepository implements EntradaRepository {
-  private mapRowToEntrada(row: EntradaRow): Entrada {
-    return {
-      id: row.id,
-      codigo: row.codigo,
-      eventoId: row.evento_id,
-      usuarioId: row.usuario_id,
-      cantidadLocalidades: row.cantidad_localidades,
-      estado: row.estado,
-      fechaReserva: row.fecha_reserva.toISOString(),
-      fechaPago: row.fecha_pago ? row.fecha_pago.toISOString() : undefined,
-      fechaUso: row.fecha_uso ? row.fecha_uso.toISOString() : undefined,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
   async findById(id: string): Promise<Entrada | null> {
     const [rows] = await pool.query<EntradaRow[]>(
-      "SELECT * FROM entradas WHERE id = ?",
+      "SELECT id, codigo, idEvento eventoId, idUsuario usuarioId, cantidadLocalidades, est.descripcion estado, fechaReserva, fechaPago, fechaUso, createdAt, updatedAt FROM Entradas e join EntradaEstados est ON e.idEstado = est.idEstado WHERE id = ?",
       [id]
     );
-    
+
     if (rows.length === 0) return null;
-    return this.mapRowToEntrada(rows[0]);
+
+    return rows[0];
   }
 
   async findByCodigo(codigo: string): Promise<Entrada | null> {
     const [rows] = await pool.query<EntradaRow[]>(
-      "SELECT * FROM entradas WHERE codigo = ?",
+      "SELECT id, codigo, idEvento eventoId, idUsuario usuarioId, cantidadLocalidades, est.descripcion estado, fechaReserva, fechaPago, fechaUso, createdAt, updatedAt FROM Entradas e join EntradaEstados est ON e.idEstado = est.idEstado WHERE codigo = ?",
       [codigo]
     );
-    
+
     if (rows.length === 0) return null;
-    return this.mapRowToEntrada(rows[0]);
+    return rows[0];
   }
 
   async findAll(): Promise<Entrada[]> {
     const [rows] = await pool.query<EntradaRow[]>(
-      "SELECT * FROM entradas ORDER BY created_at DESC"
+      "SELECT id, codigo, idEvento eventoId, idUsuario usuarioId, cantidadLocalidades, est.descripcion estado, fechaReserva, fechaPago, fechaUso, createdAt, updatedAt FROM Entradas e join EntradaEstados est ON e.idEstado = est.idEstado ORDER BY createdAt DESC"
     );
-    
-    return rows.map(row => this.mapRowToEntrada(row));
+
+    return rows;
   }
 
   async findByEventoId(eventoId: string): Promise<Entrada[]> {
     const [rows] = await pool.query<EntradaRow[]>(
-      "SELECT * FROM entradas WHERE evento_id = ? ORDER BY created_at DESC",
+      "SELECT id, codigo, idEvento eventoId, idUsuario usuarioId, cantidadLocalidades, est.descripcion estado, fechaReserva, fechaPago, fechaUso, createdAt, updatedAt FROM Entradas e join EntradaEstados est ON e.idEstado = est.idEstado WHERE idEvento = ? ORDER BY createdAt DESC",
       [eventoId]
     );
-    
-    return rows.map(row => this.mapRowToEntrada(row));
+
+    return rows;
   }
 
   async save(entrada: Entrada): Promise<void> {
+    switch (entrada.estado) {
+      case "NUEVA":
+        var idEstado = 1;
+        break;
+      case "ACTIVA":
+        var idEstado = 2;
+        break;
+      case "UTILIZADA":
+        var idEstado = 3;
+        break;
+      case "CANCELADA":
+        var idEstado = 4;
+        break;
+      default:
+        throw new Error("Estado de entrada inválido");
+    }
+
     await pool.query<ResultSetHeader>(
-      `INSERT INTO entradas 
-       (id, codigo, evento_id, usuario_id, cantidad_localidades, estado, 
-        fecha_reserva, fecha_pago, fecha_uso, created_at, updated_at) 
+      `INSERT INTO Entradas 
+       (id, codigo, idEvento, idUsuario, cantidadLocalidades, idEstado, 
+        fechaReserva, fechaPago, fechaUso, createdAt, updatedAt) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         entrada.id,
@@ -84,7 +74,7 @@ export class MySQLTicketRepository implements EntradaRepository {
         entrada.eventoId,
         entrada.usuarioId,
         entrada.cantidadLocalidades,
-        entrada.estado,
+        idEstado,
         new Date(entrada.fechaReserva),
         entrada.fechaPago ? new Date(entrada.fechaPago) : null,
         entrada.fechaUso ? new Date(entrada.fechaUso) : null,
@@ -95,18 +85,35 @@ export class MySQLTicketRepository implements EntradaRepository {
   }
 
   async update(entrada: Entrada): Promise<void> {
+    switch (entrada.estado) {
+      case "NUEVA":
+        var idEstado = 1;
+        break;
+      case "ACTIVA":
+        var idEstado = 2;
+        break;
+      case "UTILIZADA":
+        var idEstado = 3;
+        break;
+      case "CANCELADA":
+        var idEstado = 4;
+        break;
+      default:
+        throw new Error("Estado de entrada inválido");
+    }
+
     const [result] = await pool.query<ResultSetHeader>(
-      `UPDATE entradas 
-       SET codigo = ?, evento_id = ?, usuario_id = ?, cantidad_localidades = ?, 
-           estado = ?, fecha_reserva = ?, fecha_pago = ?, fecha_uso = ?, 
-           updated_at = ? 
+      `UPDATE Entradas 
+       SET codigo = ?, idEvento = ?, idUsuario = ?, cantidadLocalidades = ?, 
+           idEstado = ?, fechaReserva = ?, fechaPago = ?, fechaUso = ?, 
+           updatedAt = ? 
        WHERE id = ?`,
       [
         entrada.codigo,
         entrada.eventoId,
         entrada.usuarioId,
         entrada.cantidadLocalidades,
-        entrada.estado,
+        idEstado,
         new Date(entrada.fechaReserva),
         entrada.fechaPago ? new Date(entrada.fechaPago) : null,
         entrada.fechaUso ? new Date(entrada.fechaUso) : null,

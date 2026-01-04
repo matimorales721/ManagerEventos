@@ -101,6 +101,7 @@ export class EntradaService {
     };
 
     await this.entradaRepository.save(entrada);
+    console.log("Entrada reservada:", entrada);
     return entrada;
   }
 
