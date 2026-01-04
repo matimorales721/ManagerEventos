@@ -19,7 +19,7 @@ export class EntradaService {
     private entradaRepository: EntradaRepository,
     private eventoRepository: EventoRepository,
     private usuarioRepository: UsuarioRepository
-  ) {}
+  ) { }
 
   // Genera un código único para la entrada
   private generateTicketCode(): string {
@@ -55,10 +55,10 @@ export class EntradaService {
 
   // Reserva de entradas
   async reservarEntrada(data: ReservarEntradaDTO): Promise<Entrada> {
-    
+
     //console.log("Reservando entrada con datos:", data);
     const evento = await this.eventoRepository.findById(data.eventoId);
-    
+
     if (!evento) {
       throw new Error("Evento no encontrado");
     }
@@ -95,7 +95,7 @@ export class EntradaService {
       );
     }
 
-    
+
 
     const entrada: Entrada = {
       id: this.generateId(),
@@ -116,9 +116,9 @@ export class EntradaService {
 
   // Pago de entradas
   async pagarEntrada(id: string): Promise<Entrada> {
-    
+
     const entrada = await this.entradaRepository.findById(id);
-    
+
     if (!entrada) {
       throw new Error("Entrada no encontrada");
     }
@@ -128,7 +128,7 @@ export class EntradaService {
     }
 
     const evento = await this.eventoRepository.findById(entrada.eventoId);
-    
+
     if (!evento) {
       throw new Error("Evento no encontrado");
     }
@@ -210,7 +210,7 @@ export class EntradaService {
 
       const ahora = newDate();
       const ahoraISO = ahora.toISOString();
-      
+
       const fechaEvento = new Date(evento.fechaHora);
       const fechaReserva = new Date(entrada.fechaReserva);
 
@@ -246,7 +246,7 @@ export class EntradaService {
     for (const evento of eventos) {
       const fechaEvento = new Date(evento.fechaHora);
       const duracion = 2; // horas // IDEA esto podria ser un campo del evento
-      const fechaEventoMasDuracion = new Date(fechaEvento.getTime() + duracion * 60 * 60 * 1000); 
+      const fechaEventoMasDuracion = new Date(fechaEvento.getTime() + duracion * 60 * 60 * 1000);
 
       if (evento.estado === EventoEstado.ACTIVO && fechaEventoMasDuracion < ahora) {
         evento.estado = EventoEstado.FINALIZADO;

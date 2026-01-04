@@ -20,6 +20,7 @@ Sistema de gestión de eventos, usuarios y entradas desarrollado con Node.js, Ex
 ## Información General
 
 Aplicación completa para la gestión de eventos y venta de entradas con:
+
 - **Frontend Web**: Interfaz de usuario con Handlebars y Bootstrap
 - **API REST**: Endpoints para integración con otros sistemas
 
@@ -30,6 +31,7 @@ Aplicación completa para la gestión de eventos y venta de entradas con:
 ## Características
 
 ### Para Usuarios
+
 - 🎫 Explorar eventos disponibles con buscador en tiempo real
 - 📝 Reservar entradas para eventos
 - 💳 Pago simulado de entradas reservadas
@@ -37,11 +39,13 @@ Aplicación completa para la gestión de eventos y venta de entradas con:
 - 📋 Gestionar mis entradas con filtros (Activas, Pendientes, Pasadas)
 
 ### Para Administradores
+
 - ✅ Validar entradas por código o escaneo de QR
 - 🔍 Buscar entradas por evento
 - 📊 Ver detalles completos de cada entrada
 
 ### Sistema
+
 - 🔄 Cancelación automática de entradas vencidas
 - 📧 Notificaciones por email (simuladas)
 - 🎨 Interfaz responsive con Bootstrap 5
@@ -131,6 +135,7 @@ Puedes cambiar entre ellos agregando `?admin=true` a la URL o desde el menú del
 ### Navegación
 
 La aplicación incluye una barra de navegación con:
+
 - Enlace a Home
 - Enlace a Mis Entradas
 - Enlace a Validar Entradas (solo para admins)

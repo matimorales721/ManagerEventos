@@ -14,7 +14,7 @@ interface CreateUsuarioDTO {
 }
 
 export class UsuarioService {
-  constructor(private usuarioRepository: UsuarioRepository) {}
+  constructor(private usuarioRepository: UsuarioRepository) { }
 
   // Genera un código único para el usuario
   private generateUserCode(): string {

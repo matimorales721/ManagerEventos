@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { EntradaService } from "../services/EntradaService";
 
 export class EntradaController {
-  constructor(private entradaService: EntradaService) {}
+  constructor(private entradaService: EntradaService) { }
 
   reservarEntrada = async (req: Request, res: Response) => {
     try {

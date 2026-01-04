@@ -46,11 +46,13 @@ npm run dev
 Por defecto, el sistema tiene dos usuarios mockeados:
 
 ### Usuario Normal
+
 - **Nombre**: Juan Pérez
 - **Email**: juan.perez@example.com
 - **Código**: USR-MOCK01
 
 ### Usuario Administrador
+
 - **Nombre**: Admin Sistema
 - **Email**: admin@example.com
 - **Código**: USR-ADMIN01
@@ -102,6 +104,7 @@ mysql -u root -p ManagerEventosDB < database/schema.sql
 ## 🗂️ Estructura de Roles
 
 ### Usuario Normal
+
 - ✅ Ver eventos
 - ✅ Reservar entradas
 - ✅ Pagar entradas
@@ -109,6 +112,7 @@ mysql -u root -p ManagerEventosDB < database/schema.sql
 - ❌ Validar entradas
 
 ### Usuario Admin
+
 - ✅ Ver eventos
 - ✅ Reservar entradas
 - ✅ Pagar entradas
@@ -134,6 +138,7 @@ mysql -u root -p ManagerEventosDB < database/schema.sql
 ## 🐛 Solución de Problemas
 
 ### Error de Conexión a MySQL
+
 ```bash
 # Verificar que MySQL está corriendo
 sudo systemctl status mysql  # Linux
@@ -144,12 +149,14 @@ net start MySQL              # Windows
 ```
 
 ### Puerto 3000 en Uso
+
 ```bash
 # Cambiar puerto en src/server.ts
 const PORT = process.env.PORT || 3001;
 ```
 
 ### Error al Compilar
+
 ```bash
 # Limpiar y reinstalar
 rm -rf node_modules dist
@@ -168,6 +175,7 @@ npm run build
 ## 🤝 Contribuir
 
 Si encuentras bugs o tienes ideas de mejora:
+
 1. Crea un issue
 2. Haz un fork
 3. Crea una rama con tu feature
@@ -176,6 +184,7 @@ Si encuentras bugs o tienes ideas de mejora:
 ## 📞 Soporte
 
 Para preguntas o problemas, revisa:
+
 - [README.md](README.md) - Documentación completa
 - [database/schema.sql](database/schema.sql) - Estructura de BD
 - Código fuente en `src/`

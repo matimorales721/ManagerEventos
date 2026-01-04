@@ -11,34 +11,34 @@ const app = express();
 
 // Configuración de Handlebars
 app.engine('hbs', engine({
-  extname: '.hbs',
-  defaultLayout: 'main',
-  layoutsDir: path.join(__dirname, '../views/layouts'),
-  partialsDir: path.join(__dirname, '../views/partials'),
-  helpers: {
-    eq: (a: any, b: any) => a === b,
-    not: (value: any) => !value,
-    formatDate: (date: string) => {
-      if (!date) return '';
-      const d = new Date(date);
-      return d.toLocaleDateString('es-ES', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    },
-    formatDateOnly: (date: string) => {
-      if (!date) return '';
-      const d = new Date(date);
-      return d.toLocaleDateString('es-ES', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric'
-      });
+    extname: '.hbs',
+    defaultLayout: 'main',
+    layoutsDir: path.join(__dirname, '../views/layouts'),
+    partialsDir: path.join(__dirname, '../views/partials'),
+    helpers: {
+        eq: (a: any, b: any) => a === b,
+        not: (value: any) => !value,
+        formatDate: (date: string) => {
+            if (!date) return '';
+            const d = new Date(date);
+            return d.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        },
+        formatDateOnly: (date: string) => {
+            if (!date) return '';
+            const d = new Date(date);
+            return d.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
     }
-  }
 }));
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, '../views'));
@@ -48,10 +48,10 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Sesión
 app.use(session({
-  secret: 'manager-eventos-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false } // En producción usar true con HTTPS
+    secret: 'manager-eventos-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // En producción usar true con HTTPS
 }));
 
 // Middleware para parsear JSON y form-data

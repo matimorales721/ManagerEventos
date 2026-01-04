@@ -8,13 +8,13 @@ import { UsuarioRol } from "../../models/enums/usuarioRol";
 export type UsuarioRow = RowDataPacket & Usuario;
 
 export class MySQLUserRepository implements UsuarioRepository {
-  
+
   async findById(id: string): Promise<Usuario | null> {
     const [rows] = await pool.query<UsuarioRow[]>(
       "SELECT id, codigo, nombre, apellido, fechaNacimiento, email, rol.descripcion rol, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuarioEstados est on u.idEstado = est.idEstado join UsuarioRoles rol on u.idRol = rol.idRol WHERE id = ?",
       [id]
     );
-    
+
     if (rows.length === 0) return null;
     return rows[0];
   }
@@ -24,7 +24,7 @@ export class MySQLUserRepository implements UsuarioRepository {
       "SELECT id, codigo, nombre, apellido, fechaNacimiento, email, rol.descripcion rol, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuarioEstados est on u.idEstado = est.idEstado join UsuarioRoles rol on u.idRol = rol.idRol WHERE email = ?",
       [email]
     );
-    
+
     if (rows.length === 0) return null;
     return rows[0];
   }
@@ -33,7 +33,7 @@ export class MySQLUserRepository implements UsuarioRepository {
     const [rows] = await pool.query<UsuarioRow[]>(
       "SELECT id, codigo, nombre, apellido, fechaNacimiento, email, rol.descripcion rol, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuarioEstados est on u.idEstado = est.idEstado join UsuarioRoles rol on u.idRol = rol.idRol ORDER BY createdAt DESC"
     );
-    
+
     return rows;
   }
 
@@ -83,7 +83,7 @@ export class MySQLUserRepository implements UsuarioRepository {
   }
 
   async update(usuario: Usuario): Promise<void> {
-    
+
     let idEstado: number;
     switch (usuario.estado) {
       case UsuarioEstado.ACTIVO:
