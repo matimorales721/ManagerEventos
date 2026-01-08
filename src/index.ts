@@ -2,12 +2,19 @@ import express from "express";
 import { engine } from "express-handlebars";
 import session from "express-session";
 import path from "path";
+import "dotenv/config";
+import { initialize as initializeRepositories } from "./config/RepositoryFactory";
 import eventosRouter from "./routes/eventos.routes";
 import usuariosRouter from "./routes/usuarios.routes";
 import entradasRouter from "./routes/entradas.routes";
 import viewsRouter from "./routes/views.routes";
 
+// Inicializar los repositorios según la configuración
+initializeRepositories();
+
 const app = express();
+
+const PORT = process.env.PORT || 3000;
 
 // Configuración de Handlebars
 app.engine('hbs', engine({
@@ -66,4 +73,9 @@ app.use("/eventos", eventosRouter);
 app.use("/usuarios", usuariosRouter);
 app.use("/entradas", entradasRouter);
 
-export default app;
+// Iniciar el servidor
+app.listen(PORT, () => {
+    console.log(`--------------------------------`);
+    console.log(`Manager Eventos se encuentra corriendo en http://localhost:${PORT} 🚀`);
+    console.log(`--------------------------------`);
+});

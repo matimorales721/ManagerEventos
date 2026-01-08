@@ -1,25 +1,8 @@
 import { Router } from "express";
-import { ViewController } from "../controllers/ViewController";
-import { EventoService } from "../services/EventoService";
-import { EntradaService } from "../services/EntradaService";
-import { MySQLEventRepository } from "../persistence/db/MySQLEventRepository";
-import { MySQLTicketRepository } from "../persistence/db/MySQLTicketRepository";
-import { MySQLUserRepository } from "../persistence/db/MySQLUserRepository";
 import { mockUserMiddleware } from "../middleware/mockUser";
+import * as viewController from "../controllers/view.controller";
 
 const router = Router();
-
-// Repositorios
-const eventoRepository = new MySQLEventRepository();
-const entradaRepository = new MySQLTicketRepository();
-const usuarioRepository = new MySQLUserRepository();
-
-// Servicios
-const eventoService = new EventoService(eventoRepository);
-const entradaService = new EntradaService(entradaRepository, eventoRepository, usuarioRepository);
-
-// Controlador
-const viewController = new ViewController(eventoService, entradaService);
 
 // Aplicar middleware de usuario mockeado a todas las rutas
 router.use(mockUserMiddleware);

@@ -1,54 +1,51 @@
-import { EventoRepository } from "../repositories/EventoRepository";
-import { UsuarioRepository } from "../repositories/UsuarioRepository";
-import { EntradaRepository } from "../repositories/EntradaRepository";
-import { FileEventRepository } from "../persistence/file/FileEventRepository";
-import { FileUserRepository } from "../persistence/file/FileUserRepository";
-import { FileTicketRepository } from "../persistence/file/FileTicketRepository";
-import { MySQLEventRepository } from "../persistence/db/MySQLEventRepository";
-import { MySQLUserRepository } from "../persistence/db/MySQLUserRepository";
-import { MySQLTicketRepository } from "../persistence/db/MySQLTicketRepository";
+import { EventoRepository } from "../repositories/evento.model";
+import { UsuarioRepository } from "../repositories/usuario.model";
+import { EntradaRepository } from "../repositories/entrada.model";
 
-type RepositoryType = "file" | "mysql";
-
-export class RepositoryFactory {
-  private static repositoryType: RepositoryType;
-
-  static initialize(type?: string) {
-    // Obtener el tipo desde variable de entorno o usar el parámetro
-    const repoType = (type || process.env.REPOSITORY_TYPE || "file").toLowerCase();
-    
-    if (repoType !== "file" && repoType !== "mysql") {
-      console.warn(`Tipo de repositorio inválido: ${repoType}. Usando 'file' por defecto.`);
-      this.repositoryType = "file";
-    } else {
-      this.repositoryType = repoType as RepositoryType;
-    }
-
-    console.log(`✓ Repositorios configurados en modo: ${this.repositoryType.toUpperCase()}`);
-  }
-
-  static createEventoRepository(): EventoRepository {
-    if (this.repositoryType === "mysql") {
-      return new MySQLEventRepository();
-    }
-    return new FileEventRepository();
-  }
-
-  static createUsuarioRepository(): UsuarioRepository {
-    if (this.repositoryType === "mysql") {
-      return new MySQLUserRepository();
-    }
-    return new FileUserRepository();
-  }
-
-  static createEntradaRepository(): EntradaRepository {
-    if (this.repositoryType === "mysql") {
-      return new MySQLTicketRepository();
-    }
-    return new FileTicketRepository();
-  }
-
-  static getRepositoryType(): RepositoryType {
-    return this.repositoryType;
-  }
+enum RepositoryType {
+  FS = "FS", // File System
+  SQL = "SQL", // MySQL
 }
+
+let repositoryType: RepositoryType = RepositoryType.FS;
+
+export const initialize = (type?: string): void => {
+  // Obtener el tipo desde variable de entorno o usar el parámetro
+  const repoType = (type || process.env.REPOSITORY_TYPE || "FS").toUpperCase();
+  repositoryType = repoType as RepositoryType;
+  console.log(`✓ Repositorios configurados en modo: ${repositoryType}`);
+};
+
+export const getEventoRepository = (): EventoRepository => {
+  switch (repositoryType) {
+    case RepositoryType.SQL:
+      return require("../persistence/db/mySQLEvent.model");
+    case RepositoryType.FS:
+    default:
+      return require("../persistence/file/fileEvent.model");
+  }
+};
+
+export const getUsuarioRepository = (): UsuarioRepository => {
+  switch (repositoryType) {
+    case RepositoryType.SQL:
+      return require("../persistence/db/mySQLUser.model");
+    case RepositoryType.FS:
+    default:
+      return require("../persistence/file/fileUser.model");
+  }
+};
+
+export const getEntradaRepository = (): EntradaRepository => {
+  switch (repositoryType) {
+    case RepositoryType.SQL:
+      return require("../persistence/db/mySQLTicket.model");
+    case RepositoryType.FS:
+    default:
+      return require("../persistence/file/fileTicket.model");
+  }
+};
+
+export const getRepositoryType = (): RepositoryType => {
+  return repositoryType;
+};
