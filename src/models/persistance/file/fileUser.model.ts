@@ -1,7 +1,6 @@
-import { Usuario } from "../../models/Usuario";
-import { UsuarioRepository } from "../../repositories/usuario.model";
-import { USUARIOS_FILE } from "../../config/paths";
-import { readJsonFile, writeJsonFile } from "../../utils/fileUtils";
+import { Usuario } from "../../../types/Usuario";
+import { USUARIOS_FILE } from "../../../config/paths";
+import { readJsonFile, writeJsonFile } from "../../../utils/fileUtils";
 
 // export class FileUserRepository implements UsuarioRepository {
 const load = async (): Promise<Usuario[]> => {

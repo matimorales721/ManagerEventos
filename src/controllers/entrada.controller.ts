@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import * as entradaService from '../services/entrada.service';
 
-// export class EntradaController {
-// constructor(private entradaService: EntradaService) { }
-
 export const reservarEntrada = async (req: Request, res: Response) => {
   try {
     const { eventoId, cantidadLocalidades } = req.body;

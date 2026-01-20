@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import * as eventoService from "../services/evento.service";
 
-// export class EventoController {
-//   constructor(private eventoService: EventoService) { }
-
 export const crearEvento = async (req: Request, res: Response) => {
   try {
     const { nombre, fechaHora, cupoTotal } = req.body;

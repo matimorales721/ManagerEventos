@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import * as eventoService from "../services/evento.service";
 import * as entradaService from "../services/entrada.service";
-import { EntradaEstado } from "../models/enums/entradaEstado";
-import { UsuarioRol } from "../models/enums/usuarioRol";
+import { EntradaEstado } from "../enums/entradaEstado";
+import { UsuarioRol } from "../enums/usuarioRol";
 
 
 // Precio simulado por localidad
@@ -10,16 +10,7 @@ const PRECIO_POR_LOCALIDAD = 5000;
 
 // Helper para calcular localidades ocupadas
 const calcularLocalidadesOcupadas = async (eventoId: string): Promise<number> => {
-    const entradas = await entradaService.listarEntradas();
-    return entradas
-        .filter(
-            (e) =>
-                e.eventoId === eventoId &&
-                (e.estado === EntradaEstado.NUEVA ||
-                    e.estado === EntradaEstado.ACTIVA ||
-                    e.estado === EntradaEstado.UTILIZADA)
-        )
-        .reduce((sum, e) => sum + e.cantidadLocalidades, 0);
+    return await eventoService.calcularLocalidadesOcupadas(eventoId);
 }
 
 // HOME - Lista de eventos
@@ -70,7 +61,7 @@ export const eventoDetalle = async (req: Request, res: Response) => {
         }
 
         // Calcular disponibilidad
-        const ocupadas = await calcularLocalidadesOcupadas(evento.id);
+        const ocupadas = await eventoService.calcularLocalidadesOcupadas(evento.id);
         const disponibles = evento.cupoTotal - ocupadas;
 
         res.render("evento", {
@@ -103,7 +94,7 @@ export const formReservarEntrada = async (req: Request, res: Response) => {
         }
 
         // Calcular disponibilidad
-        const ocupadas = await calcularLocalidadesOcupadas(evento.id);
+        const ocupadas = await eventoService.calcularLocalidadesOcupadas(evento.id);
         const disponibles = evento.cupoTotal - ocupadas;
 
         res.render("reservar-entrada", {
@@ -175,6 +166,8 @@ export const formPagarEntrada = async (req: Request, res: Response) => {
 export const misEntradas = async (req: Request, res: Response) => {
     try {
         //const usuarioId = req.user?.id;
+
+        console.log('Usuario en misEntradas:', req.user);
         const usuarioId = '6fb2e5e8-be18-44e1-81fb-c14850f6e940';
 
         if (!usuarioId) {

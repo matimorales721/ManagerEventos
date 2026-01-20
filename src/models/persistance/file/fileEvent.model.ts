@@ -1,7 +1,6 @@
-import { Evento } from "../../models/Evento";
-import { EventoRepository } from "../../repositories/evento.model";
-import { EVENTOS_FILE } from "../../config/paths";
-import { readJsonFile, writeJsonFile } from "../../utils/fileUtils";
+import { Evento } from "../../../types/Evento";
+import { EVENTOS_FILE } from "../../../config/paths";
+import { readJsonFile, writeJsonFile } from "../../../utils/fileUtils";
 
 // export class FileEventRepository implements EventoRepository {
 

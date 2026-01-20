@@ -1,6 +1,6 @@
-import { Usuario } from "../models/Usuario";
+import { Usuario } from "../types/Usuario";
 
-export interface UsuarioRepository {
+export interface IUsuarioModel {
   findByUsername(username: string): Promise<Usuario | null>;
   findById(id: string): Promise<Usuario | null>;
   findByEmail(email: string): Promise<Usuario | null>;

@@ -1,4 +1,4 @@
-import { EventoEstado } from "./enums/eventoEstado";
+import { EventoEstado } from "../enums/eventoEstado";
 
 export interface Evento {
   id: string;

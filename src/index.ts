@@ -3,7 +3,7 @@ import { engine } from "express-handlebars";
 import path from "path";
 import "dotenv/config";
 
-import { initialize as initializeRepositories } from "./config/RepositoryFactory";
+import { initialize as initializeRepositories } from "./config/ModelFactory";
 // Inicializar los repositorios según la configuración
 initializeRepositories();
 

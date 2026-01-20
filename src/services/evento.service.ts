@@ -1,10 +1,13 @@
 import { randomUUID } from "crypto";
-import { Evento } from "../models/Evento";
-import { EventoEstado } from "../models/enums/eventoEstado";
-import { getEventoModel } from "../config/RepositoryFactory";
 import { newDate } from "../utils/dateHelper";
+import { Evento } from "../types/Evento";
+import { IEntrada } from "../types/Entrada";
+import { EventoEstado } from "../enums/eventoEstado";
+import { EntradaEstado } from "../enums/entradaEstado";
+import { getEntradaModel, getEventoModel } from "../config/ModelFactory";
 
-const eventoRepository = getEventoModel();
+const eventoModel = getEventoModel();
+const entradaModel = getEntradaModel();
 
 interface CreateEventoDTO {
   nombre: string;
@@ -37,15 +40,22 @@ export const crearEvento = async (data: CreateEventoDTO): Promise<Evento> => {
     updatedAt: ahoraISO,
   };
 
-  await eventoRepository.agregarEvento(evento);
+  await eventoModel.agregarEvento(evento);
   return evento;
 }
 
 export const listarEventos = async (): Promise<Evento[]> => {
-  return eventoRepository.findAll();
+  return eventoModel.findAll();
 }
 
 export const obtenerEvento = async (id: string): Promise<Evento | null> => {
-  return eventoRepository.findById(id);
+  return eventoModel.findById(id);
+}
+
+export const calcularLocalidadesOcupadas = async (eventoId: string): Promise<number> => {
+  const entradas: IEntrada[] = await entradaModel.findByEventoId(eventoId);
+  return entradas
+    .filter((e) => e.estado === EntradaEstado.NUEVA || e.estado === EntradaEstado.ACTIVA)
+    .reduce((sum, e) => sum + e.cantidadLocalidades, 0);
 }
 

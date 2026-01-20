@@ -1,8 +1,7 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import { Evento } from "../../models/Evento";
-import { EventoRepository } from "../../repositories/evento.model";
+import { Evento } from "../../../types/Evento";
 import pool from "./mysql";
-import { EventoEstado } from "../../models/enums/eventoEstado";
+import { EventoEstado } from "../../../enums/eventoEstado";
 
 export type EventoRow = RowDataPacket & Evento;
 

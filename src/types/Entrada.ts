@@ -1,6 +1,6 @@
-import { EntradaEstado } from "./enums/entradaEstado";
+import { EntradaEstado } from "../enums/entradaEstado";
 
-export interface Entrada {
+export interface IEntrada {
   id: string;
   codigo: string;
   eventoId: string;

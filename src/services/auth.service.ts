@@ -1,12 +1,12 @@
 import bcrypt from 'bcrypt';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { JwtPayload } from '../types/auth';
-import { Usuario } from '../models/Usuario';
-import { UsuarioEstado } from '../models/enums/usuarioEstado';
+import { Usuario } from '../types/Usuario';
+import { UsuarioEstado } from '../enums/usuarioEstado';
 import { randomUUID } from 'crypto';
 import { newDate } from '../utils/dateHelper';
-import { UsuarioRol } from '../models/enums/usuarioRol';
-import { getUsuarioModel } from '../config/RepositoryFactory';
+import { UsuarioRol } from '../enums/usuarioRol';
+import { getUsuarioModel } from '../config/ModelFactory';
 
 
 if (!process.env.JWT_SECRET) {

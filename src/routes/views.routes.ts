@@ -26,7 +26,7 @@ router.get("/eventos/:id/reservar", (req, res) => viewController.formReservarEnt
 
 router.get("/entradas/:id/pagar", (req, res) => viewController.formPagarEntrada(req, res)); // authenticate
 
-router.get("/mis-entradas", (req, res) => viewController.misEntradas(req, res)); // authenticate
+router.get("/mis-entradas", authenticate, (req, res) => viewController.misEntradas(req, res)); // authenticate
 
 router.get("/entradas/:id", (req, res) => viewController.entradaDetalle(req, res));
 

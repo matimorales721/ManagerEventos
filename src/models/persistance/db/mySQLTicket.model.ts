@@ -1,14 +1,11 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import { Entrada } from "../../models/Entrada";
-// import { EntradaRepository } from "../../repositories/entrada.model";
+import { IEntrada } from "../../../types/Entrada";
 import pool from "./mysql";
-import { EntradaEstado } from "../../models/enums/entradaEstado";
+import { EntradaEstado } from "../../../enums/entradaEstado";
 
-export type EntradaRow = RowDataPacket & Entrada;
+export type EntradaRow = RowDataPacket & IEntrada;
 
-// export class MySQLTicketRepository implements EntradaRepository {
-
-export const findById = async (id: string): Promise<Entrada | null> => {
+export const findById = async (id: string): Promise<IEntrada | null> => {
   const [rows] = await pool.query<EntradaRow[]>(
     "SELECT id, codigo, idEvento eventoId, idUsuario usuarioId, cantidadLocalidades, est.descripcion estado, fechaReserva, fechaPago, fechaUso, createdAt, updatedAt FROM Entradas e join EntradaEstados est ON e.idEstado = est.idEstado WHERE id = ?",
     [id]
@@ -19,7 +16,7 @@ export const findById = async (id: string): Promise<Entrada | null> => {
   return rows[0];
 }
 
-export const findByCodigo = async (codigo: string): Promise<Entrada | null> => {
+export const findByCodigo = async (codigo: string): Promise<IEntrada | null> => {
   const [rows] = await pool.query<EntradaRow[]>(
     "SELECT id, codigo, idEvento eventoId, idUsuario usuarioId, cantidadLocalidades, est.descripcion estado, fechaReserva, fechaPago, fechaUso, createdAt, updatedAt FROM Entradas e join EntradaEstados est ON e.idEstado = est.idEstado WHERE codigo = ?",
     [codigo]
@@ -29,7 +26,7 @@ export const findByCodigo = async (codigo: string): Promise<Entrada | null> => {
   return rows[0];
 }
 
-export const findAll = async (): Promise<Entrada[]> => {
+export const findAll = async (): Promise<IEntrada[]> => {
   const [rows] = await pool.query<EntradaRow[]>(
     "SELECT id, codigo, idEvento eventoId, idUsuario usuarioId, cantidadLocalidades, est.descripcion estado, fechaReserva, fechaPago, fechaUso, createdAt, updatedAt FROM Entradas e join EntradaEstados est ON e.idEstado = est.idEstado ORDER BY createdAt DESC"
   );
@@ -37,7 +34,7 @@ export const findAll = async (): Promise<Entrada[]> => {
   return rows;
 }
 
-export const findByEventoId = async (eventoId: string): Promise<Entrada[]> => {
+export const findByEventoId = async (eventoId: string): Promise<IEntrada[]> => {
   const [rows] = await pool.query<EntradaRow[]>(
     "SELECT id, codigo, idEvento eventoId, idUsuario usuarioId, cantidadLocalidades, est.descripcion estado, fechaReserva, fechaPago, fechaUso, createdAt, updatedAt FROM Entradas e join EntradaEstados est ON e.idEstado = est.idEstado WHERE idEvento = ? ORDER BY createdAt DESC",
     [eventoId]
@@ -46,7 +43,7 @@ export const findByEventoId = async (eventoId: string): Promise<Entrada[]> => {
   return rows;
 }
 
-export const findByUsuarioId = async (usuarioId: string): Promise<Entrada[]> => {
+export const findByUsuarioId = async (usuarioId: string): Promise<IEntrada[]> => {
   const [rows] = await pool.query<EntradaRow[]>(
     "SELECT id, codigo, idEvento eventoId, idUsuario usuarioId, cantidadLocalidades, est.descripcion estado, fechaReserva, fechaPago, fechaUso, createdAt, updatedAt FROM Entradas e join EntradaEstados est ON e.idEstado = est.idEstado WHERE idUsuario = ? ORDER BY createdAt DESC",
     [usuarioId]
@@ -55,7 +52,7 @@ export const findByUsuarioId = async (usuarioId: string): Promise<Entrada[]> => 
   return rows;
 }
 
-export const save = async (entrada: Entrada): Promise<void> => {
+export const save = async (entrada: IEntrada): Promise<void> => {
   switch (entrada.estado) {
     case EntradaEstado.NUEVA:
       var idEstado = 1;
@@ -94,7 +91,7 @@ export const save = async (entrada: Entrada): Promise<void> => {
   );
 }
 
-export const update = async (entrada: Entrada): Promise<void> => {
+export const update = async (entrada: IEntrada): Promise<void> => {
   switch (entrada.estado) {
     case EntradaEstado.NUEVA:
       var idEstado = 1;

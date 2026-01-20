@@ -1,7 +1,7 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import { Usuario } from "../../models/Usuario";
+import { Usuario } from "../../../types/Usuario";
 import pool from "./mysql";
-import { UsuarioEstado } from "../../models/enums/usuarioEstado";
+import { UsuarioEstado } from "../../../enums/usuarioEstado";
 
 export type UsuarioRow = RowDataPacket & Usuario;
 

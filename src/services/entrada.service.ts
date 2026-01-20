@@ -1,16 +1,16 @@
-import { Entrada } from "../models/Entrada";
-import { EntradaEstado } from "../models/enums/entradaEstado";
-
-import { getEntradaModel, getEventoModel, getUsuarioModel } from "../config/RepositoryFactory";
-
-import { EventoEstado } from "../models/enums/eventoEstado";
-import { UsuarioEstado } from "../models/enums/usuarioEstado";
+import { IEntrada } from "../types/Entrada";
+import { EntradaEstado } from "../enums/entradaEstado";
+import { EventoEstado } from "../enums/eventoEstado";
+import { UsuarioEstado } from "../enums/usuarioEstado";
 import { randomUUID } from "crypto";
 import { newDate } from "../utils/dateHelper";
 
-const entradaRepository = getEntradaModel();
-const eventoRepository = getEventoModel();
-const usuarioRepository = getUsuarioModel();
+import { getEntradaModel, getEventoModel, getUsuarioModel } from "../config/ModelFactory";
+import * as eventoService from "./evento.service";
+
+const entradaModel = getEntradaModel();
+const eventoModel = getEventoModel();
+const usuarioModel = getUsuarioModel();
 
 interface ReservarEntradaDTO {
   eventoId: string;
@@ -24,35 +24,28 @@ export const generateTicketCode = (): string => {
   return `ENT-${random}`;
 }
 
-export const calcularLocalidadesOcupadas = async (eventoId: string): Promise<number> => {
-  const entradas = await entradaRepository.findByEventoId(eventoId);
-  return entradas
-    .filter((e) => e.estado === EntradaEstado.NUEVA || e.estado === EntradaEstado.ACTIVA)
-    .reduce((sum, e) => sum + e.cantidadLocalidades, 0);
+export const listarEntradas = async (): Promise<IEntrada[]> => {
+  return entradaModel.findAll();
 }
 
-export const listarEntradas = async (): Promise<Entrada[]> => {
-  return entradaRepository.findAll();
+export const obtenerEntrada = async (id: string): Promise<IEntrada | null> => {
+  return entradaModel.findById(id);
 }
 
-export const obtenerEntrada = async (id: string): Promise<Entrada | null> => {
-  return entradaRepository.findById(id);
+export const obtenerEntradaPorCodigo = async (codigo: string): Promise<IEntrada | null> => {
+  return entradaModel.findByCodigo(codigo);
 }
 
-export const obtenerEntradaPorCodigo = async (codigo: string): Promise<Entrada | null> => {
-  return entradaRepository.findByCodigo(codigo);
-}
-
-export const listarEntradasPorUsuario = async (usuarioId: string): Promise<Entrada[]> => {
-  return entradaRepository.findByUsuarioId(usuarioId);
+export const listarEntradasPorUsuario = async (usuarioId: string): Promise<IEntrada[]> => {
+  return entradaModel.findByUsuarioId(usuarioId);
 }
 
 const generateId = (): string => randomUUID();
 
 // Reserva de entradas
-export const reservarEntrada = async (data: ReservarEntradaDTO): Promise<Entrada> => {
+export const reservarEntrada = async (data: ReservarEntradaDTO): Promise<IEntrada> => {
 
-  const evento = await eventoRepository.findById(data.eventoId);
+  const evento = await eventoModel.findById(data.eventoId);
 
   if (!evento) {
     throw new Error("Evento no encontrado");
@@ -72,7 +65,7 @@ export const reservarEntrada = async (data: ReservarEntradaDTO): Promise<Entrada
     throw new Error("El evento ya ocurrió o está en curso; no se pueden reservar entradas");
   }*/
 
-  const usuario = await usuarioRepository.findById(data.usuarioId);
+  const usuario = await usuarioModel.findById(data.usuarioId);
   if (!usuario || usuario.estado !== UsuarioEstado.ACTIVO) {
     throw new Error("Usuario no válido");
   }
@@ -81,7 +74,7 @@ export const reservarEntrada = async (data: ReservarEntradaDTO): Promise<Entrada
     throw new Error("La cantidad de localidades debe ser mayor a cero");
   }
 
-  const ocupadas = await calcularLocalidadesOcupadas(evento.id);
+  const ocupadas = await eventoService.calcularLocalidadesOcupadas(evento.id);
   const disponibles = evento.cupoTotal - ocupadas;
 
   if (data.cantidadLocalidades > disponibles) {
@@ -91,8 +84,7 @@ export const reservarEntrada = async (data: ReservarEntradaDTO): Promise<Entrada
   }
 
 
-
-  const entrada: Entrada = {
+  const entrada: IEntrada = {
     id: generateId(),
     codigo: generateTicketCode(),
     eventoId: evento.id,
@@ -104,14 +96,14 @@ export const reservarEntrada = async (data: ReservarEntradaDTO): Promise<Entrada
     updatedAt: ahoraISO,
   };
 
-  await entradaRepository.save(entrada);
+  await entradaModel.save(entrada);
   return entrada;
 }
 
 // Pago de entradas
-export const pagarEntrada = async (id: string): Promise<Entrada> => {
+export const pagarEntrada = async (id: string): Promise<IEntrada> => {
 
-  const entrada = await entradaRepository.findById(id);
+  const entrada = await entradaModel.findById(id);
 
   if (!entrada) {
     throw new Error("Entrada no encontrada");
@@ -121,7 +113,7 @@ export const pagarEntrada = async (id: string): Promise<Entrada> => {
     throw new Error("Solo se pueden pagar entradas en estado NUEVA");
   }
 
-  const evento = await eventoRepository.findById(entrada.eventoId);
+  const evento = await eventoModel.findById(entrada.eventoId);
 
   if (!evento) {
     throw new Error("Evento no encontrado");
@@ -143,13 +135,13 @@ export const pagarEntrada = async (id: string): Promise<Entrada> => {
   entrada.fechaPago = ahoraISO;
   entrada.updatedAt = entrada.fechaPago;
 
-  await entradaRepository.update(entrada);
+  await entradaModel.update(entrada);
   return entrada;
 }
 
 // Validación de entradas
-export const validarEntrada = async (codigo: string): Promise<Entrada> => {
-  const entrada = await entradaRepository.findByCodigo(codigo);
+export const validarEntrada = async (codigo: string): Promise<IEntrada> => {
+  const entrada = await entradaModel.findByCodigo(codigo);
   if (!entrada) {
     throw new Error("Entrada no encontrada");
   }
@@ -158,7 +150,7 @@ export const validarEntrada = async (codigo: string): Promise<Entrada> => {
     throw new Error("Solo se pueden validar entradas en estado ACTIVA");
   }
 
-  const evento = await eventoRepository.findById(entrada.eventoId);
+  const evento = await eventoModel.findById(entrada.eventoId);
   if (!evento) {
     throw new Error("Evento no encontrado");
   }
@@ -185,13 +177,13 @@ export const validarEntrada = async (codigo: string): Promise<Entrada> => {
   entrada.fechaUso = ahoraISO;
   entrada.updatedAt = entrada.fechaUso;
 
-  await entradaRepository.update(entrada);
+  await entradaModel.update(entrada);
   return entrada;
 }
 
 // Cancelación de entradas vencidas y finalizar eventos terminados
 export const cancelarEntradasVencidas = async (): Promise<{ entradasCanceladasPorReserva: number; entradasCanceladasPorEvento: number; eventosFinalizados: number }> => {
-  const todas = await entradaRepository.findAll();
+  const todas = await entradaModel.findAll();
 
   let entradasCanceladasPorReserva = 0;
   let entradasCanceladasPorEvento = 0;
@@ -199,7 +191,7 @@ export const cancelarEntradasVencidas = async (): Promise<{ entradasCanceladasPo
 
   for (const entrada of todas) {
 
-    const evento = await eventoRepository.findById(entrada.eventoId);
+    const evento = await eventoModel.findById(entrada.eventoId);
     if (!evento) continue;
 
     const ahora = newDate();
@@ -214,7 +206,7 @@ export const cancelarEntradasVencidas = async (): Promise<{ entradasCanceladasPo
       if (vencimientoReserva < ahora) {
         entrada.estado = EntradaEstado.CANCELADA;
         entrada.updatedAt = ahoraISO;
-        await entradaRepository.update(entrada);
+        await entradaModel.update(entrada);
         entradasCanceladasPorReserva++;
         continue;
       }
@@ -227,7 +219,7 @@ export const cancelarEntradasVencidas = async (): Promise<{ entradasCanceladasPo
     ) {
       entrada.estado = EntradaEstado.CANCELADA;
       entrada.updatedAt = ahoraISO;
-      await entradaRepository.update(entrada);
+      await entradaModel.update(entrada);
       entradasCanceladasPorEvento++;
     }
   }
@@ -236,7 +228,7 @@ export const cancelarEntradasVencidas = async (): Promise<{ entradasCanceladasPo
   const ahoraISO = ahora.toISOString();
 
   // Extra: actualizar estado de eventos que ya pasaron (Activo -> Finalizado)
-  const eventos = (await eventoRepository.findAll()).filter(e => e.estado === EventoEstado.ACTIVO);
+  const eventos = (await eventoModel.findAll()).filter(e => e.estado === EventoEstado.ACTIVO);
   for (const evento of eventos) {
     const fechaEvento = new Date(evento.fechaHora);
     const duracion = 2; // horas // IDEA esto podria ser un campo del evento
@@ -245,7 +237,7 @@ export const cancelarEntradasVencidas = async (): Promise<{ entradasCanceladasPo
     if (evento.estado === EventoEstado.ACTIVO && fechaEventoMasDuracion < ahora) {
       evento.estado = EventoEstado.FINALIZADO;
       evento.updatedAt = ahoraISO;
-      await eventoRepository.update(evento);
+      await eventoModel.update(evento);
       eventosFinalizados++;
     }
   }

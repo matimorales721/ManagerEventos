@@ -1,6 +1,6 @@
-import { Evento } from "../models/Evento";
+import { Evento } from "../types/Evento";
 
-export interface EventoRepository {
+export interface IEventoModel {
   findById(id: string): Promise<Evento | null>;
   findAll(): Promise<Evento[]>;
   agregarEvento(evento: Evento): Promise<void>;

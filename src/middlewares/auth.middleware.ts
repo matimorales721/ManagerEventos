@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JwtPayload } from '../types/auth';
-import { UsuarioRol } from '../models/enums/usuarioRol';
+import { UsuarioRol } from '../enums/usuarioRol';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -17,7 +17,7 @@ export const authenticate = (
 ) => {
   // Buscar token en Authorization header (Bearer) o en x-auth-token header
   let token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
-  
+
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
   }
