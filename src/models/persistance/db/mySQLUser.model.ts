@@ -27,7 +27,7 @@ export const findById = async (id: string): Promise<Usuario | null> => {
 
 export const findByEmail = async (email: string): Promise<Usuario | null> => {
   const [rows] = await pool.query<UsuarioRow[]>(
-    "SELECT id, password, username, nombre, apellido, fechaNacimiento, email, rol.descripcion rol, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuarioEstados est on u.idEstado = est.idEstado join UsuariosRoles ur ON ur.idUsuario = u.id join UsuarioRoles rol on ur.idRol = rol.idRol WHERE email = ? ORDER BY ur.idRol LIMIT 1",
+    "SELECT id, password, username, nombre, apellido, fechaNacimiento, email, rol.descripcion rol, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuarioEstados est on u.idEstado = est.idEstado join UsuariosRoles ur ON ur.idUsuario = u.id join UsuarioRoles rol on ur.idRol = rol.idRol WHERE email = ? ORDER BY ur.idRol DESC LIMIT 1",
     [email]
   );
 

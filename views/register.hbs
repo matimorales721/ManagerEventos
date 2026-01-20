@@ -20,7 +20,9 @@
                 </div>
                 {{/if}}
 
-                <form action="/register" method="POST">
+                <div id="alertContainer"></div>
+
+                <form id="registerForm">
                     <div class="mb-3">
                         <label for="username" class="form-label">Nombre de Usuario *</label>
                         <div class="input-group">
@@ -91,7 +93,7 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
                             <i class="bi bi-person-check"></i> Registrarse
                         </button>
                     </div>
@@ -129,14 +131,91 @@
     });
 
     // Validate password match
-    document.querySelector('form')?.addEventListener('submit', function(e) {
+    document.getElementById('registerForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
         
         if (password !== confirmPassword) {
-            e.preventDefault();
-            alert('Las contraseñas no coinciden');
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Las contraseñas no coinciden
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
             return false;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        const alertContainer = document.getElementById('alertContainer');
+        
+        // Disable button and show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Registrando...';
+        alertContainer.innerHTML = '';
+        
+        try {
+            const formData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: password,
+                nombre: document.getElementById('nombre').value,
+                apellido: document.getElementById('apellido').value,
+                fechaNacimiento: document.getElementById('fechaNacimiento').value
+            };
+
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                // El token ahora se guarda automáticamente en una cookie HTTP-Only
+                // Mostrar mensaje de éxito y redirigir
+                alertContainer.innerHTML = `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill"></i> ${data.message || 'Registro exitoso'}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Redirect to home page after a short delay
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1500);
+            } else {
+                // Show error message
+                const errorMessage = data.error || data.errors?.map(e => e.msg).join(', ') || 'Error al registrar usuario';
+                alertContainer.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i> ${errorMessage}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-person-check"></i> Registrarse';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Error de conexión. Por favor, intenta nuevamente.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            // Re-enable button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-person-check"></i> Registrarse';
         }
     });
 

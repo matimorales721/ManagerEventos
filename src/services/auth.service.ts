@@ -53,7 +53,20 @@ export const register = async (
     };
 
     await usuarioModel.createUser(usuario);
-    return usuario.id;
+
+    // Generar token JWT para el usuario recién registrado
+    const payload: JwtPayload = {
+        id: usuario.id,
+        role: UsuarioRol.NORMAL, // cambiarn, obtener el rol real desde el model
+        username: usuario.username,
+    };
+
+    const options: SignOptions = {
+        expiresIn: (process.env.JWT_EXPIRES_IN as any) || '1h',
+        issuer: 'curso-utn-backend',
+    };
+
+    return jwt.sign(payload, secretKey, options);
 };
 
 export const login = async (

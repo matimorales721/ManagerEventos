@@ -11,7 +11,15 @@ export const register = async (req: Request, res: Response) => {
         }
 
         const { username, email, password, nombre, apellido, fechaNacimiento } = req.body;
-        await authService.register(username, email, password, nombre, apellido, fechaNacimiento);
+        const token = await authService.register(username, email, password, nombre, apellido, fechaNacimiento);
+
+        // Guardar token en cookie HTTP-Only
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000 // 24 horas
+        });
 
         return res.status(201).json({ message: 'Usuario creado exitosamente' });
     } catch (error: any) {
@@ -35,7 +43,15 @@ export const login = async (req: Request, res: Response) => {
         const { email, password } = req.body;
         const token = await authService.login(email, password);
 
-        return res.json({ token });
+        // Guardar token en cookie HTTP-Only
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000 // 24 horas
+        });
+
+        return res.json({ message: 'Login exitoso' });
     } catch (error: any) {
         console.error(error);
         if (error.message === 'Credenciales inválidas') {

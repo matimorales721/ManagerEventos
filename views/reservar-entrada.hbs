@@ -58,18 +58,11 @@ document.getElementById('formReserva').addEventListener('submit', async (e) => {
     const cantidadLocalidades = parseInt(document.getElementById('cantidadLocalidades').value);
         
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            showAlert('error', 'Debes iniciar sesión para reservar entradas');
-            setTimeout(() => window.location.href = '/login', 1500);
-            return;
-        }
-        
+        // La cookie se envía automáticamente con cada request
         const response = await fetch('/api/entradas/reservar', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 eventoId: '{{evento.id}}',
@@ -80,6 +73,12 @@ document.getElementById('formReserva').addEventListener('submit', async (e) => {
         const data = await response.json();
         
         if (!response.ok) {
+            // Si no está autenticado, redirigir al login
+            if (response.status === 401 || response.status === 403) {
+                showAlert('error', 'Sesión expirada. Redirigiendo al login...');
+                setTimeout(() => window.location.href = '/login', 1500);
+                return;
+            }
             throw new Error(data.message || 'Error al reservar entrada');
         }
         

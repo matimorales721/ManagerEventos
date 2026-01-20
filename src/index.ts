@@ -1,6 +1,7 @@
 import express from "express";
 import { engine } from "express-handlebars";
 import path from "path";
+import cookieParser from "cookie-parser";
 import "dotenv/config";
 
 import { initialize as initializeRepositories } from "./config/ModelFactory";
@@ -56,6 +57,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Middleware para parsear JSON y form-data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware para parsear cookies
+app.use(cookieParser());
 
 // View Routes (deben ir primero para capturar rutas raíz)
 app.use("/", viewsRouter);

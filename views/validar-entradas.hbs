@@ -18,13 +18,13 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-                <form id="formValidarEntrada" action="/validar-entradas/buscar" method="POST">
+                <form id="formValidarEntrada">
                     <div class="mb-3">
                         <label for="eventoId" class="form-label"><strong>Evento:</strong></label>
                         <select class="form-select" id="eventoId" name="eventoId" required>
                             <option value="">Seleccione un evento...</option>
                             {{#each eventos}}
-                            <option value="{{this.id}}" {{#if ../selectedEventoId}}{{#if (eq this.id ../selectedEventoId)}}selected{{/if}}{{/if}}>
+                            <option value="{{this.id}}">
                                 {{this.nombre}} - {{this.codigo}}
                             </option>
                             {{/each}}
@@ -56,107 +56,237 @@
     </div>
 </div>
 
-{{#if entrada}}
+<!-- Contenedor dinámico para resultados -->
 <div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-lg border-{{#if (eq entrada.estado 'ACTIVA')}}success{{else if (eq entrada.estado 'UTILIZADA')}}secondary{{else}}danger{{/if}}">
-            <div class="card-header bg-{{#if (eq entrada.estado 'ACTIVA')}}success{{else if (eq entrada.estado 'UTILIZADA')}}secondary{{else}}danger{{/if}} text-white">
-                <h4 class="mb-0">
-                    {{#if (eq entrada.estado 'ACTIVA')}}
-                    <i class="bi bi-check-circle-fill"></i> Reserva Confirmada
-                    {{else if (eq entrada.estado 'UTILIZADA')}}
-                    <i class="bi bi-check-all"></i> Entrada Verificada
-                    {{else}}
-                    <i class="bi bi-x-circle-fill"></i> Entrada No Válida
-                    {{/if}}
-                </h4>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <p class="mb-1"><strong>Código:</strong> {{entrada.codigo}}</p>
-                    <p class="mb-1"><strong>Evento:</strong> {{evento.nombre}} - {{evento.codigo}}</p>
-                    <p class="mb-1"><strong>Cantidad de Localidades:</strong> {{entrada.cantidadLocalidades}}</p>
-                    {{#if precioTotal}}
-                    <p class="mb-1"><strong>Precio Total:</strong> ${{precioTotal}}</p>
-                    {{/if}}
-                    {{#if entrada.fechaPago}}
-                    <p class="mb-1"><strong>Fecha Pago:</strong> {{formatDate entrada.fechaPago}}</p>
-                    {{/if}}
-                    <p class="mb-1">
-                        <strong>Estado:</strong>
-                        <span class="badge {{#if (eq entrada.estado 'ACTIVA')}}bg-success{{else if (eq entrada.estado 'UTILIZADA')}}bg-secondary{{else}}bg-danger{{/if}}">
-                            {{entrada.estado}}
-                        </span>
-                    </p>
-                </div>
-
-                {{#if (eq entrada.estado 'ACTIVA')}}
-                <form action="/validar-entradas/{{entrada.codigo}}" method="POST">
-                    <input type="hidden" name="eventoId" value="{{selectedEventoId}}">
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-success btn-lg btn-validar-entrada">
-                            <i class="bi bi-check-circle"></i> Verificar <i class="bi bi-check-circle"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="window.location.reload()">
-                            <i class="bi bi-arrow-left"></i> Nueva Búsqueda →
-                        </button>
-                    </div>
-                </form>
-                {{else if (eq entrada.estado 'UTILIZADA')}}
-                <div class="alert alert-warning">
-                    <i class="bi bi-exclamation-triangle"></i> Esta entrada ya fue utilizada anteriormente.
-                </div>
-                <button type="button" class="btn btn-outline-secondary w-100" onclick="window.location.reload()">
-                    <i class="bi bi-arrow-left"></i> Nueva Búsqueda →
-                </button>
-                {{else}}
-                <div class="alert alert-danger">
-                    <i class="bi bi-x-circle"></i> Esta entrada no está activa.
-                </div>
-                <button type="button" class="btn btn-outline-secondary w-100" onclick="window.location.reload()">
-                    <i class="bi bi-arrow-left"></i> Nueva Búsqueda →
-                </button>
-                {{/if}}
-            </div>
-        </div>
+    <div class="col-lg-8" id="resultadoContainer">
+        <!-- Aquí se insertará la tarjeta con JavaScript -->
     </div>
 </div>
-{{/if}}
-
-{{#if entradaValidada}}
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-lg border-success">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0">
-                    <i class="bi bi-check-circle-fill"></i> Entrada Verificada <i class="bi bi-check-circle-fill"></i>
-                </h4>
-            </div>
-            <div class="card-body text-center">
-                <h5 class="mb-3">La entrada ha sido validada exitosamente</h5>
-                
-                <div class="mb-3 text-start">
-                    <p class="mb-1"><strong>Código:</strong> {{entradaValidada.codigo}}</p>
-                    <p class="mb-1"><strong>Evento:</strong> {{eventoValidado.nombre}}</p>
-                    <p class="mb-1"><strong>Cantidad de Localidades:</strong> {{entradaValidada.cantidadLocalidades}}</p>
-                    {{#if precioTotalValidado}}
-                    <p class="mb-1"><strong>Precio Total:</strong> ${{precioTotalValidado}}</p>
-                    {{/if}}
-                    {{#if entradaValidada.fechaPago}}
-                    <p class="mb-1"><strong>Fecha Pago:</strong> {{formatDate entradaValidada.fechaPago}}</p>
-                    {{/if}}
-                </div>
-
-                <div class="d-grid">
-                    <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='/validar-entradas?eventoId={{selectedEventoId}}'">
-                        <i class="bi bi-arrow-left"></i> Nueva Búsqueda →
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{{/if}}
 
 {{/if}}
 {{/unless}}
+
+<script>
+// 1. BÚSQUEDA DE ENTRADA
+document.getElementById('formValidarEntrada').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const btn = e.target.querySelector('button[type="submit"]');
+    const btnText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Buscando...';
+    
+    const eventoId = document.getElementById('eventoId').value;
+    const codigoEntrada = document.getElementById('codigoEntrada').value;
+    
+    try {
+        const response = await fetch('/api/entradas/buscar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ eventoId, codigoEntrada })
+        });
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Error del servidor. Por favor, recarga la página.');
+        }
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = '/login';
+                return;
+            }
+            throw new Error(data.message || 'Entrada no encontrada');
+        }
+        
+        // Mostrar la tarjeta con los resultados
+        mostrarTarjetaEntrada(data);
+        
+    } catch (error) {
+        mostrarError(error.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = btnText;
+    }
+});
+
+// 2. MOSTRAR TARJETA DINÁMICA
+function mostrarTarjetaEntrada(data, recienValidada = false) {
+    const { entrada, evento, precioTotal } = data;
+    
+    const colorMap = {
+        'ACTIVA': 'success',
+        'UTILIZADA': 'secondary',
+        'CANCELADA': 'danger',
+        'RESERVADA': 'warning',
+        'NUEVA': 'warning'
+    };
+    const color = colorMap[entrada.estado] || 'danger';
+    
+    const iconMap = {
+        'ACTIVA': '<i class="bi bi-check-circle-fill"></i> Reserva Confirmada',
+        'UTILIZADA': '<i class="bi bi-check-all"></i> Entrada Verificada',
+        'NUEVA': '<i class="bi bi-clock-fill"></i> Reserva Pendiente',
+        'CANCELADA': '<i class="bi bi-x-circle-fill"></i> Entrada Cancelada',
+        'RESERVADA': '<i class="bi bi-hourglass-split"></i> Entrada Reservada'
+    };
+    const titulo = iconMap[entrada.estado] || '<i class="bi bi-x-circle-fill"></i> Entrada No Válida';
+    
+    const html = `
+        <div class="card shadow-lg border-${color}">
+            <div class="card-header bg-${color} text-white">
+                <h4 class="mb-0">${titulo}</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Código:</strong> ${entrada.codigo}</p>
+                    <p class="mb-1"><strong>Evento:</strong> ${evento.nombre} - ${evento.codigo}</p>
+                    <p class="mb-1"><strong>Cantidad de Localidades:</strong> ${entrada.cantidadLocalidades}</p>
+                    <p class="mb-1"><strong>Precio Total:</strong> $${precioTotal}</p>
+                    ${entrada.fechaPago ? 
+                        `<p class="mb-1"><strong>Fecha Pago:</strong> ${formatearFecha(entrada.fechaPago)}</p>` : ''}
+                    <p class="mb-1">
+                        <strong>Estado:</strong>
+                        <span class="badge bg-${color}">${entrada.estado}</span>
+                    </p>
+                </div>
+                
+                <div id="alertContainerValidar"></div>
+                
+                ${entrada.estado === 'ACTIVA' ? `
+                    <div class="d-grid gap-2">
+                        <button onclick="validarEntrada('${entrada.codigo}')" 
+                                class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle"></i> Verificar <i class="bi bi-check-circle"></i>
+                        </button>
+                        <button onclick="limpiarBusqueda()" 
+                                class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Nueva Búsqueda
+                        </button>
+                    </div>
+                ` : entrada.estado === 'UTILIZADA' ? `
+                    ${recienValidada ? `
+                    <div class="alert alert-success alert-dismissible fade show mb-3">
+                        <i class="bi bi-check-circle-fill"></i> ¡Entrada validada exitosamente!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    ` : `
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Esta entrada ya fue utilizada anteriormente.
+                    </div>
+                    `}
+                    <button onclick="limpiarBusqueda()" 
+                            class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-arrow-left"></i> Nueva Búsqueda
+                    </button>
+                ` : `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-x-circle"></i> Esta entrada no está activa.
+                    </div>
+                    <button onclick="limpiarBusqueda()" 
+                            class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-arrow-left"></i> Nueva Búsqueda
+                    </button>
+                `}
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('resultadoContainer').innerHTML = html;
+}
+
+// 3. VALIDAR ENTRADA
+async function validarEntrada(codigo) {
+    if (!confirm('¿Confirmar validación de esta entrada?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/entradas/validar/${codigo}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Error del servidor. Por favor, recarga la página.');
+        }
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                showAlert('error', 'Sesión expirada. Redirigiendo al login...');
+                setTimeout(() => window.location.href = '/login', 1500);
+                return;
+            }
+            throw new Error(data.message || 'Error al validar entrada');
+        }
+        
+        // Refrescar la tarjeta con el nuevo estado
+        const eventoId = document.getElementById('eventoId').value;
+        const codigoSinPrefijo = codigo.replace('ENT-', '');
+        
+        const refreshResponse = await fetch('/api/entradas/buscar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                eventoId, 
+                codigoEntrada: codigoSinPrefijo 
+            })
+        });
+        
+        const refreshData = await refreshResponse.json();
+        mostrarTarjetaEntrada(refreshData, true);
+        
+    } catch (error) {
+        showAlert('error', error.message);
+    }
+}
+
+// 4. HELPERS
+function limpiarBusqueda() {
+    document.getElementById('codigoEntrada').value = '';
+    document.getElementById('resultadoContainer').innerHTML = '';
+    document.getElementById('codigoEntrada').focus();
+}
+
+function mostrarError(mensaje) {
+    document.getElementById('resultadoContainer').innerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+}
+
+function showAlert(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill';
+    
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show mb-3" role="alert">
+            <i class="bi bi-${icon}"></i> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    document.getElementById('alertContainerValidar').innerHTML = alertHtml;
+}
+
+function formatearFecha(fecha) {
+    return new Date(fecha).toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+</script>

@@ -5,6 +5,30 @@ import { UsuarioRol } from '../enums/usuarioRol';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
+export const authenticateOrNot = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+
+  // Buscar token en cookies
+  let token = '';
+  if (req.cookies) {
+    token = req.cookies.token;
+  } else {
+    return next(); // No autenticado, continuar sin user
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return next(); // Token inválido, continuar sin user
+    }
+    req.user = decoded as JwtPayload;
+    next();
+  }
+  );
+};
+
 /**
  * Middleware de autenticación
  *
@@ -15,10 +39,11 @@ export const authenticate = (
   res: Response,
   next: NextFunction
 ) => {
-  // Buscar token en Authorization header (Bearer) o en x-auth-token header
-  let token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
-
-  if (!token) {
+  // Buscar token en cookies
+  let token = '';
+  if (req.cookies) {
+    token = req.cookies.token;
+  } else {
     return res.status(401).json({ message: 'No token provided' });
   }
 
@@ -39,7 +64,7 @@ export const authenticate = (
 export const authorize = (roles: Array<UsuarioRol>) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {
-      return res.status(403).json({ message: 'Acceso denegado' });
+      return res.status(403).json({ message: 'Acceso denegado. Tienes que ser administrador.' });
     }
     next();
   };

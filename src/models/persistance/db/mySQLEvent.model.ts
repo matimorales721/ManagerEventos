@@ -58,17 +58,32 @@ export const agregarEvento = async (evento: Evento): Promise<void> => {
 }
 
 export const update = async (evento: Evento): Promise<void> => {
+
+  switch (evento.estado) {
+    case EventoEstado.ACTIVO:
+      var idEstado = 1;
+      break;
+    case EventoEstado.CANCELADO:
+      var idEstado = 2;
+      break;
+    case EventoEstado.FINALIZADO:
+      var idEstado = 3;
+      break;
+    default:
+      throw new Error("Estado de evento inválido");
+  }
+
   const [result] = await pool.query<ResultSetHeader>(
     `UPDATE Eventos 
        SET codigo = ?, nombre = ?, fechaHora = ?, cupoTotal = ?, 
-           estado = ?, updatedAt = ? 
+           idEstado = ?, updatedAt = ? 
        WHERE id = ?`,
     [
       evento.codigo,
       evento.nombre,
       new Date(evento.fechaHora),
       evento.cupoTotal,
-      evento.estado,
+      idEstado,
       new Date(evento.updatedAt),
       evento.id,
     ]

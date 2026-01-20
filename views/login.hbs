@@ -127,9 +127,6 @@
             const data = await response.json();
             
             if (response.ok) {
-                // Save token to localStorage
-                localStorage.setItem('token', data.token);
-                
                 // Show success message
                 alertContainer.innerHTML = `
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -146,7 +143,7 @@
                 // Show error message
                 alertContainer.innerHTML = `
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill"></i> ${data.message || 'Error al iniciar sesión'}
+                        <i class="bi bi-exclamation-triangle-fill"></i> ${data.error || 'Error al iniciar sesión'}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 `;

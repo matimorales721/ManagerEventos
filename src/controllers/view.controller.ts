@@ -4,6 +4,14 @@ import * as entradaService from "../services/entrada.service";
 import { EntradaEstado } from "../enums/entradaEstado";
 import { UsuarioRol } from "../enums/usuarioRol";
 
+// Mostrar vista Cancelar Vencidas (solo admin)
+export const mostrarCancelarVencidas = async (req: Request, res: Response) => {
+    res.render('cancelar-vencidas', {
+        user: req.user,
+        isCancelar: true
+    });
+};
+
 
 // Precio simulado por localidad
 const PRECIO_POR_LOCALIDAD = 5000;
@@ -126,8 +134,7 @@ export const formPagarEntrada = async (req: Request, res: Response) => {
         }
 
         // Verificar que la entrada pertenece al usuario
-        //const usuarioLogueadoId = req.user?.id;
-        const usuarioLogueadoId = '6fb2e5e8-be18-44e1-81fb-c14850f6e940'; // Simulado
+        const usuarioLogueadoId = req.user?.id;
 
         if (entrada.usuarioId !== usuarioLogueadoId) {
             return res.status(403).render("error", {
@@ -165,10 +172,8 @@ export const formPagarEntrada = async (req: Request, res: Response) => {
 // MIS ENTRADAS
 export const misEntradas = async (req: Request, res: Response) => {
     try {
-        //const usuarioId = req.user?.id;
 
-        console.log('Usuario en misEntradas:', req.user);
-        const usuarioId = '6fb2e5e8-be18-44e1-81fb-c14850f6e940';
+        const usuarioId = req.user?.id;
 
         if (!usuarioId) {
             return res.status(401).render("error", {
@@ -217,7 +222,6 @@ export const entradaDetalle = async (req: Request, res: Response) => {
 
         // Verificar que la entrada pertenece al usuario
         const usuarioLogueadoId = req.user?.id;
-        //const usuarioLogueadoId = '6fb2e5e8-be18-44e1-81fb-c14850f6e940'; // Simulado
 
         if (entrada.usuarioId !== usuarioLogueadoId) {
             return res.status(403).render("error", {
@@ -274,6 +278,9 @@ export const formValidarEntradas = async (req: Request, res: Response) => {
 // BUSCAR ENTRADA PARA VALIDAR
 export const buscarEntradaValidar = async (req: Request, res: Response) => {
     try {
+
+        console.log("llegue al controller - buscarEntradaValidar");
+
         const { eventoId, codigoEntrada } = req.body;
         const codigo = `ENT-${codigoEntrada}`;
 
