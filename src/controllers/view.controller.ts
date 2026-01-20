@@ -121,50 +121,6 @@ export const formReservarEntrada = async (req: Request, res: Response) => {
     }
 }
 
-// PROCESAR RESERVA
-export const procesarReserva = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-        const { cantidadLocalidades } = req.body;
-        const usuarioId = req.user?.id;
-
-        if (!usuarioId) {
-            return res.status(401).render("error", {
-                message: "Usuario no autenticado",
-                user: req.user,
-            });
-        }
-
-        const evento = await eventoService.obtenerEvento(id);
-        if (!evento) {
-            return res.status(404).render("error", {
-                message: "Evento no encontrado",
-                user: req.user,
-            });
-        }
-
-        // Reservar entrada
-        const entrada = await entradaService.reservarEntrada({
-            eventoId: id,
-            usuarioId,
-            cantidadLocalidades: parseInt(cantidadLocalidades),
-        });
-
-        res.render("reserva-confirmada", {
-            entrada,
-            evento,
-            user: req.user,
-            pageTitle: "Reserva Confirmada",
-        });
-    } catch (error: any) {
-        res.status(400).render("error", {
-            message: "Error al procesar reserva",
-            error: error.message,
-            user: req.user,
-        });
-    }
-}
-
 // FORMULARIO PAGAR ENTRADA
 export const formPagarEntrada = async (req: Request, res: Response) => {
     try {
@@ -179,7 +135,10 @@ export const formPagarEntrada = async (req: Request, res: Response) => {
         }
 
         // Verificar que la entrada pertenece al usuario
-        if (entrada.usuarioId !== req.user?.id) {
+        //const usuarioLogueadoId = req.user?.id;
+        const usuarioLogueadoId = '6fb2e5e8-be18-44e1-81fb-c14850f6e940'; // Simulado
+
+        if (entrada.usuarioId !== usuarioLogueadoId) {
             return res.status(403).render("error", {
                 message: "No tienes permisos para ver esta entrada",
                 user: req.user,
@@ -212,59 +171,11 @@ export const formPagarEntrada = async (req: Request, res: Response) => {
     }
 }
 
-// PROCESAR PAGO
-export const procesarPago = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-        const entrada = await entradaService.obtenerEntrada(id);
-
-        if (!entrada) {
-            return res.status(404).render("error", {
-                message: "Entrada no encontrada",
-                user: req.user,
-            });
-        }
-
-        // Verificar que la entrada pertenece al usuario
-        if (entrada.usuarioId !== req.user?.id) {
-            return res.status(403).render("error", {
-                message: "No tienes permisos para pagar esta entrada",
-                user: req.user,
-            });
-        }
-
-        const entradaPagada = await entradaService.pagarEntrada(id);
-        const evento = await eventoService.obtenerEvento(entradaPagada.eventoId);
-
-        if (!evento) {
-            return res.status(404).render("error", {
-                message: "Evento no encontrado",
-                user: req.user,
-            });
-        }
-
-        const precioTotal = entradaPagada.cantidadLocalidades * PRECIO_POR_LOCALIDAD;
-
-        res.render("pago-confirmado", {
-            entrada: entradaPagada,
-            evento,
-            precioTotal: precioTotal.toLocaleString("es-AR"),
-            user: req.user,
-            pageTitle: "Pago Confirmado",
-        });
-    } catch (error: any) {
-        res.status(400).render("error", {
-            message: "Error al procesar pago",
-            error: error.message,
-            user: req.user,
-        });
-    }
-}
-
 // MIS ENTRADAS
 export const misEntradas = async (req: Request, res: Response) => {
     try {
-        const usuarioId = req.user?.id;
+        //const usuarioId = req.user?.id;
+        const usuarioId = '6fb2e5e8-be18-44e1-81fb-c14850f6e940';
 
         if (!usuarioId) {
             return res.status(401).render("error", {
@@ -312,7 +223,10 @@ export const entradaDetalle = async (req: Request, res: Response) => {
         }
 
         // Verificar que la entrada pertenece al usuario
-        if (entrada.usuarioId !== req.user?.id) {
+        const usuarioLogueadoId = req.user?.id;
+        //const usuarioLogueadoId = '6fb2e5e8-be18-44e1-81fb-c14850f6e940'; // Simulado
+
+        if (entrada.usuarioId !== usuarioLogueadoId) {
             return res.status(403).render("error", {
                 message: "No tienes permisos para ver esta entrada",
                 user: req.user,
@@ -345,15 +259,6 @@ export const entradaDetalle = async (req: Request, res: Response) => {
 // VALIDAR ENTRADAS (ADMIN)
 export const formValidarEntradas = async (req: Request, res: Response) => {
     try {
-        // Verificar que es admin
-        if (req.user?.rol !== UsuarioRol.ADMIN) {
-            return res.status(403).render("validar-entradas", {
-                user: req.user,
-                isValidar: true,
-                pageTitle: "Validar Entradas",
-            });
-        }
-
         const eventos = await eventoService.listarEventos();
         const selectedEventoId = req.query.eventoId as string;
 
@@ -376,14 +281,6 @@ export const formValidarEntradas = async (req: Request, res: Response) => {
 // BUSCAR ENTRADA PARA VALIDAR
 export const buscarEntradaValidar = async (req: Request, res: Response) => {
     try {
-        // Verificar que es admin
-        if (req.user?.rol !== UsuarioRol.ADMIN) {
-            return res.status(403).render("error", {
-                message: "Solo administradores pueden validar entradas",
-                user: req.user,
-            });
-        }
-
         const { eventoId, codigoEntrada } = req.body;
         const codigo = `ENT-${codigoEntrada}`;
 
@@ -444,49 +341,23 @@ export const buscarEntradaValidar = async (req: Request, res: Response) => {
     }
 }
 
-// VALIDAR ENTRADA
-export const validarEntrada = async (req: Request, res: Response) => {
-    try {
-        // Verificar que es admin
-        if (req.user?.rol !== UsuarioRol.ADMIN) {
-            return res.status(403).render("error", {
-                message: "Solo administradores pueden validar entradas",
-                user: req.user,
-            });
-        }
 
-        const { codigo } = req.params;
-        const { eventoId } = req.body;
 
-        const entradaValidada = await entradaService.validarEntrada(codigo);
-        const eventoValidado = await eventoService.obtenerEvento(entradaValidada.eventoId);
-        const eventos = await eventoService.listarEventos();
+// FORMULARIO DE LOGIN
+export const formLogin = (req: Request, res: Response) => {
+    res.render("login", {
+        pageTitle: "Iniciar Sesión",
+    });
+};
 
-        if (!eventoValidado) {
-            return res.status(404).render("error", {
-                message: "Evento no encontrado",
-                user: req.user,
-            });
-        }
+// FORMULARIO DE REGISTRO
+export const formRegister = (req: Request, res: Response) => {
+    const today = new Date();
+    const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    const maxDate = eighteenYearsAgo.toISOString().split('T')[0];
 
-        const precioTotalValidado = entradaValidada.cantidadLocalidades * PRECIO_POR_LOCALIDAD;
-
-        res.render("validar-entradas", {
-            eventos,
-            entradaValidada,
-            eventoValidado,
-            precioTotalValidado: precioTotalValidado.toLocaleString("es-AR"),
-            selectedEventoId: eventoId,
-            user: req.user,
-            isValidar: true,
-            pageTitle: "Entrada Validada",
-        });
-    } catch (error: any) {
-        res.status(400).render("error", {
-            message: "Error al validar entrada",
-            error: error.message,
-            user: req.user,
-        });
-    }
-}
-
+    res.render("register", {
+        maxDate,
+        pageTitle: "Registro de Usuario",
+    });
+};

@@ -12,9 +12,9 @@ const saveAll = async (usuarios: Usuario[]): Promise<void> => {
   await writeJsonFile(USUARIOS_FILE, usuarios);
 }
 
-const findById = async (id: string): Promise<Usuario | null> => {
+const findByUsername = async (username: string): Promise<Usuario | null> => {
   const usuarios = await load();
-  return usuarios.find((u) => u.id === id) ?? null;
+  return usuarios.find((u) => u.username === username) ?? null;
 }
 
 const findByEmail = async (email: string): Promise<Usuario | null> => {
@@ -26,7 +26,7 @@ const findAll = async (): Promise<Usuario[]> => {
   return load();
 }
 
-const save = async (usuario: Usuario): Promise<void> => {
+const createUser = async (usuario: Usuario): Promise<void> => {
   const usuarios = await load();
   usuarios.push(usuario);
   await saveAll(usuarios);
@@ -40,4 +40,4 @@ const update = async (usuario: Usuario): Promise<void> => {
   await saveAll(usuarios);
 }
 
-export { findById, findByEmail, findAll, save, update };
+export { findByUsername, findByEmail, findAll, createUser, update };

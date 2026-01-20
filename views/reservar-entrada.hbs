@@ -11,8 +11,10 @@
                     <i class="bi bi-info-circle"></i> 
                     <strong>Disponibles:</strong> {{disponibles}} localidades
                 </div>
+
+                <div id="alertContainer"></div>
                 
-                <form action="/eventos/{{evento.id}}/reservar" method="POST" id="formReserva">
+                <form id="formReserva">
                     <div class="mb-4">
                         <label for="cantidadLocalidades" class="form-label">
                             <strong>Cantidad de Localidades:</strong>
@@ -43,3 +45,67 @@
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('formReserva').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const btn = e.target.querySelector('button[type="submit"]');
+    const btnText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
+    
+    const cantidadLocalidades = parseInt(document.getElementById('cantidadLocalidades').value);
+        
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showAlert('error', 'Debes iniciar sesión para reservar entradas');
+            setTimeout(() => window.location.href = '/login', 1500);
+            return;
+        }
+        
+        const response = await fetch('/api/entradas/reservar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                eventoId: '{{evento.id}}',
+                cantidadLocalidades
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al reservar entrada');
+        }
+        
+        showAlert('success', 'Reserva confirmada! Redirigiendo...');
+        setTimeout(() => {
+            window.location.href = '/mis-entradas';
+        }, 1500);
+        
+    } catch (error) {
+        showAlert('error', error.message);
+        btn.disabled = false;
+        btn.innerHTML = btnText;
+    }
+});
+
+function showAlert(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill';
+    
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            <i class="bi bi-${icon}"></i> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    document.getElementById('alertContainer').innerHTML = alertHtml;
+}
+</script>

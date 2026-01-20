@@ -1,16 +1,16 @@
 import { Entrada } from "../models/Entrada";
 import { EntradaEstado } from "../models/enums/entradaEstado";
 
-import { getEntradaRepository, getEventoRepository, getUsuarioRepository } from "../config/RepositoryFactory";
+import { getEntradaModel, getEventoModel, getUsuarioModel } from "../config/RepositoryFactory";
 
 import { EventoEstado } from "../models/enums/eventoEstado";
 import { UsuarioEstado } from "../models/enums/usuarioEstado";
 import { randomUUID } from "crypto";
 import { newDate } from "../utils/dateHelper";
 
-const entradaRepository = getEntradaRepository();
-const eventoRepository = getEventoRepository();
-const usuarioRepository = getUsuarioRepository();
+const entradaRepository = getEntradaModel();
+const eventoRepository = getEventoModel();
+const usuarioRepository = getUsuarioModel();
 
 interface ReservarEntradaDTO {
   eventoId: string;
@@ -52,7 +52,6 @@ const generateId = (): string => randomUUID();
 // Reserva de entradas
 export const reservarEntrada = async (data: ReservarEntradaDTO): Promise<Entrada> => {
 
-  //console.log("Reservando entrada con datos:", data);
   const evento = await eventoRepository.findById(data.eventoId);
 
   if (!evento) {
@@ -106,7 +105,6 @@ export const reservarEntrada = async (data: ReservarEntradaDTO): Promise<Entrada
   };
 
   await entradaRepository.save(entrada);
-  //console.log("Entrada reservada:", entrada);
   return entrada;
 }
 

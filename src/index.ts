@@ -1,16 +1,16 @@
 import express from "express";
 import { engine } from "express-handlebars";
-import session from "express-session";
 import path from "path";
 import "dotenv/config";
-import { initialize as initializeRepositories } from "./config/RepositoryFactory";
-import eventosRouter from "./routes/eventos.routes";
-import usuariosRouter from "./routes/usuarios.routes";
-import entradasRouter from "./routes/entradas.routes";
-import viewsRouter from "./routes/views.routes";
 
+import { initialize as initializeRepositories } from "./config/RepositoryFactory";
 // Inicializar los repositorios según la configuración
 initializeRepositories();
+
+import eventosRouter from "./routes/eventos.routes";
+import entradasRouter from "./routes/entradas.routes";
+import viewsRouter from "./routes/views.routes";
+import authRoutes from "./routes/auth.routes";
 
 const app = express();
 
@@ -53,14 +53,6 @@ app.set('views', path.join(__dirname, '../views'));
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Sesión
-app.use(session({
-    secret: 'manager-eventos-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false } // En producción usar true con HTTPS
-}));
-
 // Middleware para parsear JSON y form-data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -69,9 +61,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", viewsRouter);
 
 // API Routes
-app.use("/eventos", eventosRouter);
-app.use("/usuarios", usuariosRouter);
-app.use("/entradas", entradasRouter);
+app.use("/api/eventos", eventosRouter);
+app.use("/api/entradas", entradasRouter);
+app.use('/api/auth', authRoutes);
 
 // Iniciar el servidor
 app.listen(PORT, () => {

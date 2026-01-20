@@ -16,9 +16,11 @@
                     <span class="text-success">${{precioTotal}}</span>
                 </h4>
 
-                <form action="/entradas/{{entrada.id}}/pagar" method="POST">
+                <div id="alertContainer"></div>
+
+                <form id="formPago">
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-pagar btn-lg btn-confirmar-pago">
+                        <button type="submit" class="btn btn-pagar btn-lg">
                             <i class="bi bi-wallet2"></i> Pagar con MercadoPago
                         </button>
                         <a href="/mis-entradas" class="btn btn-outline-secondary">
@@ -30,3 +32,65 @@
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('formPago').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!confirm('¿Confirmar pago de esta entrada?')) {
+        return;
+    }
+    
+    const btn = e.target.querySelector('button[type="submit"]');
+    const btnText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando pago...';
+           
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showAlert('error', 'Debes iniciar sesión para realizar el pago');
+            setTimeout(() => window.location.href = '/login', 1500);
+            return;
+        }
+        
+        const response = await fetch('/api/entradas/pagar/{{entrada.id}}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al procesar el pago');
+        }
+        
+        showAlert('success', 'Pago confirmado! Redirigiendo...');
+        setTimeout(() => {
+            window.location.href = '/mis-entradas';
+        }, 1500);
+        
+    } catch (error) {
+        showAlert('error', error.message);
+        btn.disabled = false;
+        btn.innerHTML = btnText;
+    }
+});
+
+function showAlert(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill';
+    
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            <i class="bi bi-${icon}"></i> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    document.getElementById('alertContainer').innerHTML = alertHtml;
+}
+</script>

@@ -27,20 +27,51 @@ INSERT INTO UsuarioRoles (idRol, descripcion) VALUES
 --ON DUPLICATE KEY UPDATE descripcion = VALUES(descripcion);
 
 -- Tabla de Usuarios
-CREATE TABLE IF NOT EXISTS Usuarios (
-    id VARCHAR(36) PRIMARY KEY,
-    codigo VARCHAR(20) UNIQUE NOT NULL,
+CREATE TABLE Usuarios (
+    id VARCHAR(50) PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
     fechaNacimiento DATE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    idRol INT NOT NULL DEFAULT 1,
     idEstado INT NOT NULL DEFAULT 1,
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (idEstado) REFERENCES UsuarioEstados(idEstado),
-    FOREIGN KEY (idRol) REFERENCES UsuarioRoles(idRol)
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (idEstado) REFERENCES UsuarioEstados(idEstado)
 );
+
+-- Tabla intermedia UsuariosRoles (muchos a muchos)
+CREATE TABLE UsuariosRoles (
+    idUsuario VARCHAR(50) NOT NULL,
+    idRol INT NOT NULL,
+    PRIMARY KEY (idUsuario, idRol)--,
+    -- FOREIGN KEY (idUsuario) REFERENCES Usuarios(id)
+    --     ON DELETE CASCADE
+    --     ON UPDATE CASCADE,
+    -- FOREIGN KEY (idRol) REFERENCES UsuarioRoles(idRol)
+    --     ON DELETE CASCADE
+    --     ON UPDATE CASCADE
+);
+
+-- Trigger para asignar Rol NORMAL por defecto
+DELIMITER $$
+
+CREATE TRIGGER trg_asignar_rol_normal
+AFTER INSERT ON Usuarios
+FOR EACH ROW
+BEGIN
+  DECLARE userRoleId INT;
+  -- Buscar ID del rol 'NORMAL'
+  SELECT idRol INTO userRoleId FROM UsuarioRoles WHERE descripcion = 'NORMAL' LIMIT 1;
+
+  -- Si lo encontró, insertamos
+  IF(userRoleId IS NOT NULL) THEN
+    INSERT INTO UsuariosRoles (idUsuario, idRol) VALUES (NEW.id, userRoleId);
+  END IF;
+END$$
+
+DELIMITER ;
 
 -- Tabla de Estados de Evento
 CREATE TABLE IF NOT EXISTS EventoEstados (

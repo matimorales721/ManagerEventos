@@ -1,10 +1,10 @@
 import { randomUUID } from "crypto";
 import { Evento } from "../models/Evento";
 import { EventoEstado } from "../models/enums/eventoEstado";
-import { getEventoRepository } from "../config/RepositoryFactory";
+import { getEventoModel } from "../config/RepositoryFactory";
 import { newDate } from "../utils/dateHelper";
 
-const eventoRepository = getEventoRepository();
+const eventoRepository = getEventoModel();
 
 interface CreateEventoDTO {
   nombre: string;

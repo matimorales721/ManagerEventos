@@ -6,10 +6,17 @@ import * as entradaService from '../services/entrada.service';
 
 export const reservarEntrada = async (req: Request, res: Response) => {
   try {
-    const { eventoId, usuarioId, cantidadLocalidades } = req.body;
+    const { eventoId, cantidadLocalidades } = req.body;
+    //const usuarioId = req.user?.id; // Obtener del JWT
+    const usuarioId = '6fb2e5e8-be18-44e1-81fb-c14850f6e940'; // Temporalmente fijo para pruebas';
 
-    // usar validations
-    if (!eventoId || !usuarioId || typeof cantidadLocalidades !== "number") {
+    // Validar autenticación
+    if (!usuarioId) {
+      return res.status(401).json({ message: "Usuario no autenticado" });
+    }
+
+    // Validar datos
+    if (!eventoId || typeof cantidadLocalidades !== "number") {
       return res.status(400).json({ message: "Datos inválidos" });
     }
 
