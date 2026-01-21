@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "6f9f79d8-32a8-4ba8-b8a2-cf2043468640",
+    "codigo": "ENT-R2UVYQ",
+    "eventoId": "10809a82-5083-45e3-a41a-3e6faa5b858b",
+    "usuarioId": "bb9c97be-b77c-4ed3-b112-8ef8aa2af3d6",
+    "cantidadLocalidades": 1,
+    "estado": "UTILIZADA",
+    "fechaReserva": "2026-01-21T01:01:20.569Z",
+    "createdAt": "2026-01-21T01:01:20.569Z",
+    "updatedAt": "2026-01-21T01:02:59.146Z",
+    "fechaPago": "2026-01-21T01:01:27.301Z",
+    "fechaUso": "2026-01-21T01:02:59.146Z"
+  }
+]

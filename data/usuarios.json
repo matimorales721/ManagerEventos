@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "bb9c97be-b77c-4ed3-b112-8ef8aa2af3d6",
+    "password": "$2b$10$4rU27KRIfuLdzg48Jc.7M.AdF.bMcJ7mmGoA74NdIIfPZkd8wIk4q",
+    "username": "UserAdmin",
+    "nombre": "User",
+    "apellido": "Admin",
+    "fechaNacimiento": "1970-01-10",
+    "email": "admin@example.com",
+    "estado": "ACTIVO",
+    "createdAt": "2026-01-21T00:59:00.092Z",
+    "updatedAt": "2026-01-21T00:59:00.092Z",
+    "rol": "ADMIN"
+  }
+]

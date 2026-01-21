@@ -94,7 +94,6 @@ export const validarEntrada = async (req: Request, res: Response) => {
   try {
     const { codigo } = req.params;
     const entrada = await entradaService.validarEntrada(codigo);
-    console.log(entrada);
     return res.json(entrada);
   } catch (err: any) {
     console.error(err);

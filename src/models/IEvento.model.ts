@@ -1,8 +1,8 @@
-import { Evento } from "../types/Evento";
+import { IEvento } from "../types/Evento";
 
 export interface IEventoModel {
-  findById(id: string): Promise<Evento | null>;
-  findAll(): Promise<Evento[]>;
-  agregarEvento(evento: Evento): Promise<void>;
-  update(evento: Evento): Promise<void>;
+  findById(id: string): Promise<IEvento | null>;
+  findAll(): Promise<IEvento[]>;
+  agregarEvento(evento: IEvento): Promise<void>;
+  update(evento: IEvento): Promise<void>;
 }

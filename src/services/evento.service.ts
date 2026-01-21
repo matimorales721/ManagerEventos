@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { newDate } from "../utils/dateHelper";
-import { Evento } from "../types/Evento";
+import { IEvento } from "../types/Evento";
 import { IEntrada } from "../types/Entrada";
 import { EventoEstado } from "../enums/eventoEstado";
 import { EntradaEstado } from "../enums/entradaEstado";
@@ -24,12 +24,12 @@ const generateEventCode = (): string => {
 const generateId = (): string => randomUUID();
 
 // Creación de un nuevo evento
-export const crearEvento = async (data: CreateEventoDTO): Promise<Evento> => {
+export const crearEvento = async (data: CreateEventoDTO): Promise<IEvento> => {
 
   const ahora = newDate();
   const ahoraISO = ahora.toISOString();
 
-  const evento: Evento = {
+  const evento: IEvento = {
     id: generateId(),
     codigo: generateEventCode(),
     nombre: data.nombre,
@@ -44,11 +44,11 @@ export const crearEvento = async (data: CreateEventoDTO): Promise<Evento> => {
   return evento;
 }
 
-export const listarEventos = async (): Promise<Evento[]> => {
+export const listarEventos = async (): Promise<IEvento[]> => {
   return eventoModel.findAll();
 }
 
-export const obtenerEvento = async (id: string): Promise<Evento | null> => {
+export const obtenerEvento = async (id: string): Promise<IEvento | null> => {
   return eventoModel.findById(id);
 }
 

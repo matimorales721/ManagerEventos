@@ -279,8 +279,6 @@ export const formValidarEntradas = async (req: Request, res: Response) => {
 export const buscarEntradaValidar = async (req: Request, res: Response) => {
     try {
 
-        console.log("llegue al controller - buscarEntradaValidar");
-
         const { eventoId, codigoEntrada } = req.body;
         const codigo = `ENT-${codigoEntrada}`;
 

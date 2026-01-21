@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { JwtPayload } from '../types/auth';
-import { Usuario } from '../types/Usuario';
+import { IUsuario } from '../types/Usuario';
 import { UsuarioEstado } from '../enums/usuarioEstado';
 import { randomUUID } from 'crypto';
 import { newDate } from '../utils/dateHelper';
@@ -39,7 +39,7 @@ export const register = async (
     const ahora = newDate();
     const ahoraISO = ahora.toISOString();
 
-    const usuario: Omit<Usuario, 'rol'> = {
+    const usuario: Omit<IUsuario, 'rol'> = {
         id: generateId(),
         password: hashedPassword,
         username,
@@ -108,14 +108,14 @@ export const login = async (
     return jwt.sign(payload, secretKey, options);
 };
 
-export const listarUsuarios = async (): Promise<Usuario[]> => {
+export const listarUsuarios = async (): Promise<IUsuario[]> => {
     return usuarioModel.findAll();
 }
 
-export const obtenerUsuario = async (username: string): Promise<Usuario | null> => {
+export const obtenerUsuario = async (username: string): Promise<IUsuario | null> => {
     return usuarioModel.findByUsername(username);
 }
 
-export const obtenerUsuarioPorId = async (id: string): Promise<Usuario | null> => {
+export const obtenerUsuarioPorId = async (id: string): Promise<IUsuario | null> => {
     return usuarioModel.findById(id);
 }

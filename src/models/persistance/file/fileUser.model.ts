@@ -1,37 +1,36 @@
-import { Usuario } from "../../../types/Usuario";
+import { IUsuario } from "../../../types/Usuario";
 import { USUARIOS_FILE } from "../../../config/paths";
 import { readJsonFile, writeJsonFile } from "../../../utils/fileUtils";
 
-// export class FileUserRepository implements UsuarioRepository {
-const load = async (): Promise<Usuario[]> => {
-  return readJsonFile<Usuario[]>(USUARIOS_FILE, []);
+const load = async (): Promise<IUsuario[]> => {
+  return readJsonFile<IUsuario[]>(USUARIOS_FILE, []);
 }
 
-const saveAll = async (usuarios: Usuario[]): Promise<void> => {
+const saveAll = async (usuarios: IUsuario[]): Promise<void> => {
   await writeJsonFile(USUARIOS_FILE, usuarios);
 }
 
-const findByUsername = async (username: string): Promise<Usuario | null> => {
+const findByUsername = async (username: string): Promise<IUsuario | null> => {
   const usuarios = await load();
   return usuarios.find((u) => u.username === username) ?? null;
 }
 
-const findByEmail = async (email: string): Promise<Usuario | null> => {
+const findByEmail = async (email: string): Promise<IUsuario | null> => {
   const usuarios = await load();
   return usuarios.find((u) => u.email === email) ?? null;
 }
 
-const findAll = async (): Promise<Usuario[]> => {
+const findAll = async (): Promise<IUsuario[]> => {
   return load();
 }
 
-const createUser = async (usuario: Usuario): Promise<void> => {
+const createUser = async (usuario: IUsuario): Promise<void> => {
   const usuarios = await load();
   usuarios.push(usuario);
   await saveAll(usuarios);
 }
 
-const update = async (usuario: Usuario): Promise<void> => {
+const update = async (usuario: IUsuario): Promise<void> => {
   const usuarios = await load();
   const index = usuarios.findIndex((u) => u.id === usuario.id);
   if (index === -1) throw new Error("Usuario no encontrado");
@@ -39,4 +38,9 @@ const update = async (usuario: Usuario): Promise<void> => {
   await saveAll(usuarios);
 }
 
-export { findByUsername, findByEmail, findAll, createUser, update };
+const findById = async (id: string): Promise<IUsuario | null> => {
+  const usuarios = await load();
+  return usuarios.find((u) => u.id === id) ?? null;
+}
+
+export { findById, findByUsername, findByEmail, findAll, createUser, update };

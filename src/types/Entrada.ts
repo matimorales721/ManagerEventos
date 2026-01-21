@@ -6,7 +6,7 @@ export interface IEntrada {
   eventoId: string;
   usuarioId: string;
   cantidadLocalidades: number;
-  estado: EntradaEstado;
+  estado?: EntradaEstado;
   fechaReserva: string;   // cuándo se reservó
   fechaPago?: string;     // cuándo se pagó
   fechaUso?: string;      // cuándo se validó

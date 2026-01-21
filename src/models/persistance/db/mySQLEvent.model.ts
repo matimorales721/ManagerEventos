@@ -1,11 +1,11 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import { Evento } from "../../../types/Evento";
+import { IEvento } from "../../../types/Evento";
 import pool from "./mysql";
 import { EventoEstado } from "../../../enums/eventoEstado";
 
-export type EventoRow = RowDataPacket & Evento;
+export type EventoRow = RowDataPacket & IEvento;
 
-export const findById = async (id: string): Promise<Evento | null> => {
+export const findById = async (id: string): Promise<IEvento | null> => {
   const [rows] = await pool.query<EventoRow[]>(
     "SELECT id, codigo, nombre, fechaHora, cupoTotal, est.descripcion estado, createdAt, updatedAt FROM Eventos e join EventoEstados est on est.idEstado = e.idEstado  WHERE id = ?",
     [id]
@@ -15,7 +15,7 @@ export const findById = async (id: string): Promise<Evento | null> => {
   return rows[0];
 }
 
-export const findAll = async (): Promise<Evento[]> => {
+export const findAll = async (): Promise<IEvento[]> => {
   const [rows] = await pool.query<EventoRow[]>(
     "SELECT id, codigo, nombre, fechaHora, cupoTotal, est.descripcion estado, createdAt, updatedAt FROM Eventos e join EventoEstados est on est.idEstado = e.idEstado ORDER BY fechaHora DESC"
   );
@@ -23,7 +23,7 @@ export const findAll = async (): Promise<Evento[]> => {
   return rows;
 }
 
-export const agregarEvento = async (evento: Evento): Promise<void> => {
+export const agregarEvento = async (evento: IEvento): Promise<void> => {
 
   switch (evento.estado) {
     case EventoEstado.ACTIVO:
@@ -57,7 +57,7 @@ export const agregarEvento = async (evento: Evento): Promise<void> => {
   );
 }
 
-export const update = async (evento: Evento): Promise<void> => {
+export const update = async (evento: IEvento): Promise<void> => {
 
   switch (evento.estado) {
     case EventoEstado.ACTIVO:

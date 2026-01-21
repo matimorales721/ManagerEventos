@@ -1,7 +1,7 @@
 import { UsuarioEstado } from "../enums/usuarioEstado";
 import { UsuarioRol } from "../enums/usuarioRol";
 
-export interface Usuario {
+export interface IUsuario {
   username: string;
   email: string;
   password: string;

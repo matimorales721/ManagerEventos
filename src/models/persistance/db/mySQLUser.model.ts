@@ -1,11 +1,11 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import { Usuario } from "../../../types/Usuario";
+import { IUsuario } from "../../../types/Usuario";
 import pool from "./mysql";
 import { UsuarioEstado } from "../../../enums/usuarioEstado";
 
-export type UsuarioRow = RowDataPacket & Usuario;
+export type UsuarioRow = RowDataPacket & IUsuario;
 
-export const findByUsername = async (username: string): Promise<Usuario | null> => {
+export const findByUsername = async (username: string): Promise<IUsuario | null> => {
   const [rows] = await pool.query<UsuarioRow[]>(
     "SELECT id, username, nombre, apellido, fechaNacimiento, email, rol.descripcion rol, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuarioEstados est on u.idEstado = est.idEstado join UsuariosRoles ur ON ur.idUsuario = u.id join UsuarioRoles rol on ur.idRol = rol.idRol WHERE username = ? ORDER BY ur.idRol LIMIT 1",
     [username]
@@ -15,7 +15,7 @@ export const findByUsername = async (username: string): Promise<Usuario | null> 
   return rows[0];
 }
 
-export const findById = async (id: string): Promise<Usuario | null> => {
+export const findById = async (id: string): Promise<IUsuario | null> => {
   const [rows] = await pool.query<UsuarioRow[]>(
     "SELECT id, username, nombre, apellido, fechaNacimiento, email, rol.descripcion rol, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuarioEstados est on u.idEstado = est.idEstado join UsuariosRoles ur ON ur.idUsuario = u.id join UsuarioRoles rol on ur.idRol = rol.idRol WHERE id = ? ORDER BY ur.idRol LIMIT 1",
     [id]
@@ -25,7 +25,7 @@ export const findById = async (id: string): Promise<Usuario | null> => {
   return rows[0];
 }
 
-export const findByEmail = async (email: string): Promise<Usuario | null> => {
+export const findByEmail = async (email: string): Promise<IUsuario | null> => {
   const [rows] = await pool.query<UsuarioRow[]>(
     "SELECT id, password, username, nombre, apellido, fechaNacimiento, email, rol.descripcion rol, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuarioEstados est on u.idEstado = est.idEstado join UsuariosRoles ur ON ur.idUsuario = u.id join UsuarioRoles rol on ur.idRol = rol.idRol WHERE email = ? ORDER BY ur.idRol DESC LIMIT 1",
     [email]
@@ -35,7 +35,7 @@ export const findByEmail = async (email: string): Promise<Usuario | null> => {
   return rows[0];
 }
 
-export const findAll = async (): Promise<Usuario[]> => {
+export const findAll = async (): Promise<IUsuario[]> => {
   const [rows] = await pool.query<UsuarioRow[]>(
     "SELECT id, username, nombre, apellido, fechaNacimiento, email, rol.descripcion rol, est.descripcion estado, createdAt, updatedAt FROM Usuarios u join UsuariosRoles ur ON ur.idUsuario = u.id join UsuarioEstados est on u.idEstado = est.idEstado join UsuarioRoles rol on ur.idRol = rol.idRol ORDER BY createdAt DESC"
   );
@@ -43,7 +43,7 @@ export const findAll = async (): Promise<Usuario[]> => {
   return rows;
 }
 
-export const createUser = async (usuario: Usuario): Promise<void> => {
+export const createUser = async (usuario: IUsuario): Promise<void> => {
 
   let idEstado: number;
 
@@ -74,7 +74,7 @@ export const createUser = async (usuario: Usuario): Promise<void> => {
   );
 }
 
-export const update = async (usuario: Usuario): Promise<void> => {
+export const update = async (usuario: IUsuario): Promise<void> => {
 
   let idEstado: number;
   switch (usuario.estado) {

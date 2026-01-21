@@ -2,6 +2,8 @@ import { IEventoModel } from "../models/IEvento.model";
 import { IUsuarioModel } from "../models/IUsuario.model";
 import { IEntradaModel } from "../models/IEntrada.model";
 
+import { connectDB } from '../models/persistance/mongo/database';
+
 enum RepositoryType {
   FS = "FS", // File System
   SQL = "SQL", // MySQL
@@ -15,6 +17,11 @@ export const initialize = (type?: string): void => {
   const repoType = (type || process.env.REPOSITORY_TYPE || "FS").toUpperCase();
   repositoryType = repoType as RepositoryType;
   console.log(`✓ Repositorios configurados en modo: ${repositoryType}`);
+
+  if (repositoryType === RepositoryType.MONGO) {
+    // Inicializar conexión a MongoDB
+    connectDB();
+  }
 };
 
 export const getEventoModel = (): IEventoModel => {

@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "10809a82-5083-45e3-a41a-3e6faa5b858b",
+    "codigo": "EVT-MI25AH",
+    "nombre": "Show2",
+    "fechaHora": "2026-01-22T11:00:00.000Z",
+    "cupoTotal": 30,
+    "estado": "ACTIVO",
+    "createdAt": "2026-01-21T00:58:33.268Z",
+    "updatedAt": "2026-01-21T00:58:33.268Z"
+  }
+]

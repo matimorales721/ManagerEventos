@@ -1,12 +1,12 @@
 import { EventoEstado } from "../enums/eventoEstado";
 
-export interface Evento {
+export interface IEvento {
   id: string;
   codigo: string;
   nombre: string;
   fechaHora: string;   // ISO
   cupoTotal: number;
-  estado: EventoEstado;
+  estado?: EventoEstado;
   createdAt: string;
   updatedAt: string;
 }
