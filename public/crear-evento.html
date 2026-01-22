@@ -1,166 +1,167 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Crear Evento</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .preview {
-            margin-top: 10px;
-            max-width: 300px;
-        }
-        .preview img {
-            max-width: 100%;
-            height: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .error {
-            color: red;
-            margin-top: 10px;
-        }
-        .success {
-            color: green;
-            margin-top: 10px;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .preview {
+        margin-top: 10px;
+        max-width: 300px;
+      }
+      .preview img {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .error {
+        color: red;
+        margin-top: 10px;
+      }
+      .success {
+        color: green;
+        margin-top: 10px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Detalles del evento</h1>
-    
+
     <form id="eventoForm">
-        <div class="form-group">
-            <label for="titulo">Título del Evento *</label>
-            <input type="text" id="titulo" name="titulo" required minlength="2">
-        </div>
+      <div class="form-group">
+        <label for="titulo">Título del Evento *</label>
+        <input type="text" id="titulo" name="titulo" required minlength="2" />
+      </div>
 
-        <div class="form-group">
-            <label for="descripcion">Descripción *</label>
-            <textarea id="descripcion" name="descripcion" required minlength="10"></textarea>
-        </div>
+      <div class="form-group">
+        <label for="descripcion">Descripción *</label>
+        <textarea id="descripcion" name="descripcion" required minlength="10"></textarea>
+      </div>
 
-        <div class="form-group">
-            <label for="fechaHora">Fecha y Hora *</label>
-            <input type="datetime-local" id="fechaHora" name="fechaHora" required>
-        </div>
+      <div class="form-group">
+        <label for="fechaHora">Fecha y Hora *</label>
+        <input type="datetime-local" id="fechaHora" name="fechaHora" required />
+      </div>
 
-        <div class="form-group">
-            <label for="cupoTotal">Cupo Total *</label>
-            <input type="number" id="cupoTotal" name="cupoTotal" required min="1">
-        </div>
+      <div class="form-group">
+        <label for="cupoTotal">Cupo Total *</label>
+        <input type="number" id="cupoTotal" name="cupoTotal" required min="1" />
+      </div>
 
-        <div class="form-group">
-            <label for="imagen">Imagen del Evento (opcional)</label>
-            <input type="file" id="imagen" name="imagen" accept="image/*">
-            <div class="preview" id="imagePreview"></div>
-        </div>
+      <div class="form-group">
+        <label for="imagen">Imagen del Evento (opcional)</label>
+        <input type="file" id="imagen" name="imagen" accept="image/*" />
+        <div class="preview" id="imagePreview"></div>
+      </div>
 
-        <button type="submit">Crear Evento</button>
+      <button type="submit">Crear Evento</button>
     </form>
 
     <div id="message"></div>
 
     <script>
-        // Vista previa de imagen
-        document.getElementById('imagen').addEventListener('change', function(e) {
-            const preview = document.getElementById('imagePreview');
-            const file = e.target.files[0];
-            
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.innerHTML = '';
-            }
-        });
+      // Vista previa de imagen
+      document.getElementById("imagen").addEventListener("change", function (e) {
+        const preview = document.getElementById("imagePreview");
+        const file = e.target.files[0];
 
-        // Envío del formulario
-        document.getElementById('eventoForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const messageDiv = document.getElementById('message');
-            messageDiv.innerHTML = 'Creando evento...';
-            messageDiv.className = '';
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+          };
+          reader.readAsDataURL(file);
+        } else {
+          preview.innerHTML = "";
+        }
+      });
 
-            const formData = new FormData();
-            
-            // Convertir fecha local a ISO string
-            const fechaHoraInput = document.getElementById('fechaHora').value;
-            const fechaHoraISO = new Date(fechaHoraInput).toISOString();
-            
-            formData.append('titulo', document.getElementById('titulo').value);
-            formData.append('descripcion', document.getElementById('descripcion').value);
-            formData.append('fechaHora', fechaHoraISO);
-            formData.append('cupoTotal', document.getElementById('cupoTotal').value);
-            
-            const imagenFile = document.getElementById('imagen').files[0];
-            if (imagenFile) {
-                formData.append('imagen', imagenFile);
-            }
+      // Envío del formulario
+      document.getElementById("eventoForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-            try {
-                const response = await fetch('/api/eventos', {
-                    method: 'POST',
-                    body: formData
-                });
+        const messageDiv = document.getElementById("message");
+        messageDiv.innerHTML = "Creando evento...";
+        messageDiv.className = "";
 
-                const data = await response.json();
+        const formData = new FormData();
 
-                if (response.ok) {
-                    messageDiv.innerHTML = `
+        // Convertir fecha local a ISO string
+        const fechaHoraInput = document.getElementById("fechaHora").value;
+        const fechaHoraISO = new Date(fechaHoraInput).toISOString();
+
+        formData.append("titulo", document.getElementById("titulo").value);
+        formData.append("descripcion", document.getElementById("descripcion").value);
+        formData.append("fechaHora", fechaHoraISO);
+        formData.append("cupoTotal", document.getElementById("cupoTotal").value);
+
+        const imagenFile = document.getElementById("imagen").files[0];
+        if (imagenFile) {
+          formData.append("imagen", imagenFile);
+        }
+
+        try {
+          const response = await fetch("/api/eventos", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            messageDiv.innerHTML = `
                         <div class="success">
                             <strong>✓ Evento creado exitosamente!</strong><br>
                             Código: ${data.codigo}<br>
                             ID: ${data.id}
-                            ${data.imagenUrl ? `<br><img src="${data.imagenUrl}" style="max-width: 200px; margin-top: 10px;">` : ''}
+                            ${data.imagenUrl ? `<br><img src="${data.imagenUrl}" style="max-width: 200px; margin-top: 10px;">` : ""}
                         </div>
                     `;
-                    document.getElementById('eventoForm').reset();
-                    document.getElementById('imagePreview').innerHTML = '';
-                } else {
-                    messageDiv.innerHTML = `<div class="error">✗ Error: ${data.message || 'Error desconocido'}</div>`;
-                }
-            } catch (error) {
-                messageDiv.innerHTML = `<div class="error">✗ Error de conexión: ${error.message}</div>`;
-            }
-        });
+            document.getElementById("eventoForm").reset();
+            document.getElementById("imagePreview").innerHTML = "";
+          } else {
+            messageDiv.innerHTML = `<div class="error">✗ Error: ${data.message || "Error desconocido"}</div>`;
+          }
+        } catch (error) {
+          messageDiv.innerHTML = `<div class="error">✗ Error de conexión: ${error.message}</div>`;
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

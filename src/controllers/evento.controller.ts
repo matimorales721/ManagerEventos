@@ -5,7 +5,7 @@ import fs from "fs";
 export const crearEvento = async (req: Request, res: Response) => {
   try {
     const { titulo, descripcion, fechaHora } = req.body;
-    
+
     // Convertir cupoTotal a número (FormData lo envía como string)
     const cupoTotal = parseInt(req.body.cupoTotal, 10);
 
@@ -18,7 +18,7 @@ export const crearEvento = async (req: Request, res: Response) => {
     }
 
     // Si se subió una imagen, multer la guarda y pone info en req.file
-    const imagenUrl = req.file 
+    const imagenUrl = req.file
       ? `/images/eventos/${req.file.filename}`
       : undefined;
 
