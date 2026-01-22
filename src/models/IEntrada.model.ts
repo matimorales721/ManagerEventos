@@ -6,6 +6,6 @@ export interface IEntradaModel {
   findAll(): Promise<IEntrada[]>;
   findByEventoId(eventoId: string): Promise<IEntrada[]>;
   findByUsuarioId(usuarioId: string): Promise<IEntrada[]>;
-  save(entrada: IEntrada): Promise<void>;
+  save(entrada: IEntrada): Promise<string>;
   update(entrada: IEntrada): Promise<void>;
 }

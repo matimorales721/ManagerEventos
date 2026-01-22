@@ -1,0 +1,30 @@
+/* ==========================================
+   BOTONES
+   ========================================== */
+
+/* Botón de pagar */
+.btn-pagar {
+  background: linear-gradient(45deg, #0099ff, #00cc99);
+  border: none;
+  color: white;
+  font-weight: var(--font-weight-bold);
+  transition: background var(--transition-base);
+}
+
+.btn-pagar:hover {
+  background: linear-gradient(45deg, #0077cc, #009977);
+  color: white;
+}
+
+/* Filtros de estado en home */
+.btn-group .btn.active {
+  background-color: var(--bs-btn-active-bg) !important;
+  border-color: var(--bs-btn-active-border-color) !important;
+  color: var(--bs-btn-active-color) !important;
+}
+
+.filter-buttons .btn-check:checked + .btn {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: white !important;
+}

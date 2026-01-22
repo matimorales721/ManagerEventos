@@ -1,0 +1,48 @@
+/* ==========================================
+   PÁGINA DE ENTRADAS
+   ========================================== */
+
+/* Tarjetas de entradas */
+.entrada-card {
+  border-left: 4px solid var(--primary);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.entrada-card.activa {
+  border-left-color: var(--success);
+}
+
+.entrada-card.utilizada {
+  border-left-color: var(--gray-600);
+}
+
+.entrada-card.cancelada {
+  border-left-color: var(--danger);
+}
+
+.entrada-card.nueva {
+  border-left-color: var(--warning);
+}
+
+.entrada-card:hover {
+  transform: translateX(3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* QR Code Mock */
+.qr-mock {
+  width: 150px;
+  height: 150px;
+  background: var(--gray-100);
+  border: 2px dashed var(--gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border-radius: var(--border-radius-lg);
+}
+
+.qr-mock i {
+  font-size: 100px;
+  color: var(--gray-500);
+}

@@ -52,7 +52,7 @@ export const findById = async (
     const usuarioDB = await User.findById(id).lean();
     if (!usuarioDB) return null;
 
-    const usuario: IUsuario = {
+    return {
         id: usuarioDB._id.toString(),
         username: usuarioDB.username,
         email: usuarioDB.email,
@@ -64,8 +64,7 @@ export const findById = async (
         estado: usuarioDB.state,
         createdAt: usuarioDB.createdAt.toISOString(),
         updatedAt: usuarioDB.updatedAt.toISOString(),
-    }
-    return usuario;
+    };
 };
 
 export const findByEmail = async (
@@ -74,7 +73,7 @@ export const findByEmail = async (
     const [usuarioDB] = await User.find({ email: email }).lean();
     if (!usuarioDB) return null;
 
-    const usuario: IUsuario = {
+    return {
         id: usuarioDB._id.toString(),
         username: usuarioDB.username,
         email: usuarioDB.email,
@@ -86,8 +85,7 @@ export const findByEmail = async (
         estado: usuarioDB.state,
         createdAt: usuarioDB.createdAt.toISOString(),
         updatedAt: usuarioDB.updatedAt.toISOString(),
-    }
-    return usuario;
+    };
 };
 
 export const createUser = async (

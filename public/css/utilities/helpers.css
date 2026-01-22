@@ -1,0 +1,43 @@
+/* ==========================================
+   CLASES DE UTILIDAD
+   ========================================== */
+
+/* Sombras */
+.shadow-custom {
+  box-shadow: var(--shadow-lg);
+}
+
+.shadow-sm-custom {
+  box-shadow: var(--shadow-sm);
+}
+
+/* Transiciones */
+.transition-fast {
+  transition: all var(--transition-fast);
+}
+
+.transition-base {
+  transition: all var(--transition-base);
+}
+
+.transition-slow {
+  transition: all var(--transition-slow);
+}
+
+/* Espaciado */
+.mb-custom {
+  margin-bottom: var(--spacing-lg);
+}
+
+.mt-custom {
+  margin-top: var(--spacing-lg);
+}
+
+/* Textos */
+.fw-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.fw-semibold {
+  font-weight: var(--font-weight-semibold);
+}

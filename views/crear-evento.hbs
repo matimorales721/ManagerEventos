@@ -1,0 +1,266 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card shadow-lg">
+            <div class="card-header text-white" style="background-color: #2c3e50;">
+                <h3 class="mb-0">
+                    <i class="bi bi-calendar-plus"></i> Crear Nuevo Evento
+                </h3>
+                <small>Completa todos los campos para crear un evento</small>
+            </div>
+            <div class="card-body p-4">
+                {{#if error}}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> {{error}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {{/if}}
+
+                {{#if success}}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill"></i> {{success}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {{/if}}
+
+                <div id="alertContainer"></div>
+
+                <form id="crearEventoForm" enctype="multipart/form-data">
+                    <!-- Título del Evento -->
+                    <div class="mb-4">
+                        <label for="titulo" class="form-label fw-bold">
+                            <i class="bi bi-card-heading text-dark"></i> Título del Evento *
+                        </label>
+                        <input type="text" class="form-control form-control-lg" id="titulo" name="titulo" 
+                               placeholder="Ej: Concierto de Rock 2026" required minlength="2" autofocus>
+                        <small class="text-muted">Mínimo 2 caracteres</small>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-4">
+                        <label for="descripcion" class="form-label fw-bold">
+                            <i class="bi bi-text-paragraph text-dark"></i> Descripción *
+                        </label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="4" 
+                                  placeholder="Describe el evento: qué incluye, artistas, actividades, etc." 
+                                  required minlength="10"></textarea>
+                        <small class="text-muted">Mínimo 10 caracteres</small>
+                    </div>
+
+                    <!-- Imagen del Evento -->
+                    <div class="mb-4">
+                        <label for="imagen" class="form-label fw-bold">
+                            <i class="bi bi-image text-dark"></i> Imagen del Evento
+                        </label>
+                        <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                        <small class="text-muted">Formatos: JPG, PNG, GIF, WEBP. Tamaño máximo: 5MB</small>
+                        
+                        <!-- Preview de la imagen -->
+                        <div id="imagePreviewContainer" class="mt-3" style="display: none;">
+                            <label class="form-label fw-bold">Vista Previa:</label>
+                            <div class="position-relative d-inline-block">
+                                <img id="imagePreview" src="" alt="Preview" class="img-thumbnail" style="max-width: 100%; max-height: 300px;">
+                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2" id="removeImage">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Fecha y Hora -->
+                        <div class="col-md-6 mb-4">
+                            <label for="fechaHora" class="form-label fw-bold">
+                                <i class="bi bi-calendar-event text-dark"></i> Fecha y Hora *
+                            </label>
+                            <input type="datetime-local" class="form-control" id="fechaHora" name="fechaHora" required>
+                            <small class="text-muted">Fecha y hora del evento</small>
+                        </div>
+
+                        <!-- Cupo Total -->
+                        <div class="col-md-6 mb-4">
+                            <label for="cupoTotal" class="form-label fw-bold">
+                                <i class="bi bi-people text-dark"></i> Cupo Total *
+                            </label>
+                            <input type="number" class="form-control" id="cupoTotal" name="cupoTotal" 
+                                   placeholder="Ej: 500" required min="1" value="100">
+                            <small class="text-muted">Número de localidades disponibles</small>
+                        </div>
+                    </div>
+
+                    <!-- Información adicional -->
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle-fill"></i> <strong>Nota:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>El código del evento se generará automáticamente</li>
+                            <li>El estado inicial será <span class="badge bg-success">ACTIVO</span></li>
+                            <li>Todos los campos marcados con * son obligatorios</li>
+                        </ul>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                        <a href="/" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <i class="bi bi-check-circle"></i> Crear Evento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Card de ayuda -->
+        <div class="card mt-4 border-info">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="bi bi-lightbulb text-warning"></i> Consejos para crear un buen evento:
+                </h6>
+                <ul class="small mb-0">
+                    <li>Usa un título claro y atractivo que describa el evento</li>
+                    <li>Agrega una descripción detallada con toda la información relevante</li>
+                    <li>Sube una imagen de buena calidad que represente el evento</li>
+                    <li>Verifica que la fecha y hora sean correctas antes de crear</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #imagePreview {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .form-control:focus, .form-control-lg:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    }
+    
+    .card-header {
+        border-bottom: 3px solid rgba(255,255,255,0.2);
+    }
+</style>
+
+<script>
+    // Vista previa de imagen
+    const imagenInput = document.getElementById('imagen');
+    const imagePreview = document.getElementById('imagePreview');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const removeImageBtn = document.getElementById('removeImage');
+
+    imagenInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+            // Validar tamaño (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showAlert('La imagen no debe superar 5MB', 'danger');
+                imagenInput.value = '';
+                return;
+            }
+
+            // Validar tipo
+            if (!file.type.match('image.*')) {
+                showAlert('Solo se permiten archivos de imagen', 'danger');
+                imagenInput.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreviewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    removeImageBtn.addEventListener('click', function() {
+        imagenInput.value = '';
+        imagePreview.src = '';
+        imagePreviewContainer.style.display = 'none';
+    });
+
+    // Establecer fecha mínima como hoy
+    const fechaHoraInput = document.getElementById('fechaHora');
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    fechaHoraInput.min = now.toISOString().slice(0, 16);
+
+    // Envío del formulario
+    document.getElementById('crearEventoForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creando...';
+
+        const formData = new FormData();
+        
+        // Convertir fecha local a ISO
+        const fechaHoraValue = document.getElementById('fechaHora').value;
+        const fechaHoraISO = new Date(fechaHoraValue).toISOString();
+        
+        formData.append('titulo', document.getElementById('titulo').value.trim());
+        formData.append('descripcion', document.getElementById('descripcion').value.trim());
+        formData.append('fechaHora', fechaHoraISO);
+        formData.append('cupoTotal', document.getElementById('cupoTotal').value);
+        
+        const imagenFile = document.getElementById('imagen').files[0];
+        if (imagenFile) {
+            formData.append('imagen', imagenFile);
+        }
+
+        try {
+            const response = await fetch('/api/eventos', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showAlert(`
+                    <strong>¡Evento creado exitosamente!</strong><br>
+                    Código: <strong>${data.codigo}</strong><br>
+                    <a href="/eventos/${data.id}" class="alert-link">Ver evento</a>
+                `, 'success');
+                
+                // Limpiar formulario
+                document.getElementById('crearEventoForm').reset();
+                imagePreviewContainer.style.display = 'none';
+                
+                // Redirigir después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = '/eventos/' + data.id;
+                }, 2000);
+            } else {
+                showAlert(data.message || 'Error al crear el evento', 'danger');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('Error de conexión. Por favor intenta nuevamente.', 'danger');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    });
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill'}"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>

@@ -1,0 +1,69 @@
+/* ==========================================
+   NAVBAR
+   ========================================== */
+
+.navbar {
+  background-color: var(--navbar-bg);  /* ⬅️ USA LA VARIABLE DEL ARCHIVO variables.css */
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md) 0;
+}
+
+.navbar-brand {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xl);
+  color: var(--navbar-text) !important;
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-base);
+}
+
+.navbar-brand:hover {
+  color: var(--navbar-text-hover) !important;
+}
+
+.navbar-brand img {
+  height: 40px;
+  margin-right: var(--spacing-sm);
+}
+
+.navbar .nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-base);
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+  color: var(--navbar-text) !important;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar .nav-link i {
+  margin-right: 0.35rem;
+}
+
+/* Badge ADMIN en navbar */
+.navbar .badge {
+  font-size: var(--font-size-xs);
+  padding: 0.25rem 0.5rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Botón de registro en navbar */
+.navbar-nav .btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--border-radius-md);
+  transition: opacity var(--transition-base);
+}
+
+.navbar-nav .btn:hover {
+  opacity: 0.9;
+}
+
+/* Dropdown del usuario */
+.navbar .dropdown-menu {
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+}

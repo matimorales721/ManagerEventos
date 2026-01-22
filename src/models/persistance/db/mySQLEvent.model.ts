@@ -7,7 +7,7 @@ export type EventoRow = RowDataPacket & IEvento;
 
 export const findById = async (id: string): Promise<IEvento | null> => {
   const [rows] = await pool.query<EventoRow[]>(
-    "SELECT id, codigo, nombre, fechaHora, cupoTotal, est.descripcion estado, createdAt, updatedAt FROM Eventos e join EventoEstados est on est.idEstado = e.idEstado  WHERE id = ?",
+    "SELECT id, codigo, titulo, descripcion, fechaHora, cupoTotal, imagenUrl, est.descripcion estado, createdAt, updatedAt FROM Eventos e join EventoEstados est on est.idEstado = e.idEstado  WHERE id = ?",
     [id]
   );
 
@@ -17,7 +17,7 @@ export const findById = async (id: string): Promise<IEvento | null> => {
 
 export const findAll = async (): Promise<IEvento[]> => {
   const [rows] = await pool.query<EventoRow[]>(
-    "SELECT id, codigo, nombre, fechaHora, cupoTotal, est.descripcion estado, createdAt, updatedAt FROM Eventos e join EventoEstados est on est.idEstado = e.idEstado ORDER BY fechaHora DESC"
+    "SELECT id, codigo, titulo, descripcion, fechaHora, cupoTotal, imagenUrl, est.descripcion estado, createdAt, updatedAt FROM Eventos e join EventoEstados est on est.idEstado = e.idEstado ORDER BY fechaHora DESC"
   );
 
   return rows;
@@ -42,14 +42,16 @@ export const agregarEvento = async (evento: IEvento): Promise<void> => {
 
   await pool.query<ResultSetHeader>(
     `INSERT INTO Eventos 
-            (id, codigo, nombre, fechaHora, cupoTotal, idEstado, createdAt, updatedAt) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            (id, codigo, titulo, descripcion, fechaHora, cupoTotal, imagenUrl, idEstado, createdAt, updatedAt) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       evento.id,
       evento.codigo,
-      evento.nombre,
+      evento.titulo,
+      evento.descripcion,
       new Date(evento.fechaHora),
       evento.cupoTotal,
+      evento.imagenUrl,
       idEstado,
       new Date(evento.createdAt),
       new Date(evento.updatedAt),
@@ -75,14 +77,16 @@ export const update = async (evento: IEvento): Promise<void> => {
 
   const [result] = await pool.query<ResultSetHeader>(
     `UPDATE Eventos 
-       SET codigo = ?, nombre = ?, fechaHora = ?, cupoTotal = ?, 
-           idEstado = ?, updatedAt = ? 
+       SET codigo = ?, titulo = ?, descripcion = ?, fechaHora = ?, cupoTotal = ?, 
+           imagenUrl = ?, idEstado = ?, updatedAt = ? 
        WHERE id = ?`,
     [
       evento.codigo,
-      evento.nombre,
+      evento.titulo,
+      evento.descripcion,
       new Date(evento.fechaHora),
       evento.cupoTotal,
+      evento.imagenUrl,
       idEstado,
       new Date(evento.updatedAt),
       evento.id,

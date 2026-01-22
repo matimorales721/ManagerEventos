@@ -12,6 +12,14 @@ export const mostrarCancelarVencidas = async (req: Request, res: Response) => {
     });
 };
 
+// Mostrar formulario de Crear Evento (solo admin)
+export const formCrearEvento = async (req: Request, res: Response) => {
+    res.render('crear-evento', {
+        user: req.user,
+        pageTitle: 'Crear Evento'
+    });
+};
+
 
 // Precio simulado por localidad
 const PRECIO_POR_LOCALIDAD = 5000;
@@ -77,7 +85,7 @@ export const eventoDetalle = async (req: Request, res: Response) => {
             ocupadas,
             disponibles,
             user: req.user,
-            pageTitle: evento.nombre,
+            pageTitle: evento.titulo,
         });
     } catch (error: any) {
         res.status(500).render("error", {
@@ -109,7 +117,7 @@ export const formReservarEntrada = async (req: Request, res: Response) => {
             evento,
             disponibles,
             user: req.user,
-            pageTitle: `Reservar - ${evento.nombre}`,
+            pageTitle: `Reservar - ${evento.titulo}`,
         });
     } catch (error: any) {
         res.status(500).render("error", {

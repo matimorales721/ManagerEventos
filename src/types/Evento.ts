@@ -3,9 +3,11 @@ import { EventoEstado } from "../enums/eventoEstado";
 export interface IEvento {
   id: string;
   codigo: string;
-  nombre: string;
+  titulo: string;
+  descripcion: string;
   fechaHora: string;   // ISO
   cupoTotal: number;
+  imagenUrl?: string;
   estado?: EventoEstado;
   createdAt: string;
   updatedAt: string;

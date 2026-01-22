@@ -33,22 +33,34 @@
 {{#if eventos.length}}
 <div class="row g-4" id="eventosContainer">
     {{#each eventos}}
-    <div class="col-md-6 col-lg-4" data-evento-nombre="{{this.nombre}}" data-evento-estado="{{this.estado}}">
+    <div class="col-md-6 col-lg-4" data-evento-nombre="{{this.titulo}}" data-evento-estado="{{this.estado}}">
         <div class="card card-evento h-100" onclick="window.location.href='/eventos/{{this.id}}'">
-            <div class="card-body">
-                <h5 class="card-title">{{this.nombre}}</h5>
-                <p class="card-text">
-                    <i class="bi bi-calendar3"></i> {{formatDate this.fechaHora}}
-                </p>
-                <p class="card-text">
-                    <i class="bi bi-people"></i> Cupo Total: {{this.cupoTotal}}
-                </p>
-                <p class="mb-0">
-                    <span class="badge {{#if (eq this.estado 'ACTIVO')}}bg-success{{else if (eq this.estado 'FINALIZADO')}}bg-secondary{{else}}bg-danger{{/if}}">
-                        {{this.estado}}
-                    </span>
-                    <small class="text-muted ms-2">{{this.codigo}}</small>
-                </p>
+            {{#if this.imagenUrl}}
+            <img src="{{this.imagenUrl}}" class="card-img-top" alt="{{this.titulo}}" style="height: 200px; object-fit: cover;">
+            {{else}}
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-calendar-event text-secondary" style="font-size: 4rem;"></i>
+            </div>
+            {{/if}}
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{this.titulo}}</h5>
+                {{#if this.descripcion}}
+                <p class="card-text text-muted small flex-grow-1">{{this.descripcion}}</p>
+                {{/if}}
+                <div class="mt-auto">
+                    <p class="card-text mb-2">
+                        <i class="bi bi-calendar3"></i> {{formatDate this.fechaHora}}
+                    </p>
+                    <p class="card-text mb-2">
+                        <i class="bi bi-people"></i> Cupo Total: {{this.cupoTotal}}
+                    </p>
+                    <p class="mb-0">
+                        <span class="badge {{#if (eq this.estado 'ACTIVO')}}bg-success{{else if (eq this.estado 'FINALIZADO')}}bg-secondary{{else}}bg-danger{{/if}}">
+                            {{this.estado}}
+                        </span>
+                        <small class="text-muted ms-2">{{this.codigo}}</small>
+                    </p>
+                </div>
             </div>
         </div>
     </div>

@@ -1,0 +1,106 @@
+{{!-- 
+  EJEMPLO: Vista de eventos con imágenes
+  Copia este código a tus vistas para mostrar imágenes de eventos
+--}}
+
+{{!-- Tarjeta de evento con imagen --}}
+<div class="col-md-6 col-lg-4">
+    <div class="card card-evento h-100" onclick="window.location.href='/eventos/{{this.id}}'">
+        {{!-- Imagen del evento --}}
+        {{#if this.imagenUrl}}
+            <img src="{{this.imagenUrl}}" class="card-img-top" alt="{{this.titulo}}" style="height: 200px; object-fit: cover;">
+        {{else}}
+            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-calendar-event text-white" style="font-size: 4rem;"></i>
+            </div>
+        {{/if}}
+        
+        <div class="card-body">
+            <h5 class="card-title">{{this.titulo}}</h5>
+            <p class="card-text text-muted">{{this.descripcion}}</p>
+            <p class="card-text">
+                <i class="bi bi-calendar3"></i> {{formatDate this.fechaHora}}
+            </p>
+            <p class="card-text">
+                <i class="bi bi-people"></i> Cupo Total: {{this.cupoTotal}}
+            </p>
+            <p class="mb-0">
+                <span class="badge {{#if (eq this.estado 'ACTIVO')}}bg-success{{else if (eq this.estado 'FINALIZADO')}}bg-secondary{{else}}bg-danger{{/if}}">
+                    {{this.estado}}
+                </span>
+                <small class="text-muted ms-2">{{this.codigo}}</small>
+            </p>
+        </div>
+    </div>
+</div>
+
+{{!-- Vista de detalle de evento con imagen grande --}}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            {{#if evento.imagenUrl}}
+                <img src="{{evento.imagenUrl}}" class="img-fluid rounded shadow-sm" alt="{{evento.titulo}}">
+            {{else}}
+                <div class="bg-light rounded p-5 text-center">
+                    <i class="bi bi-calendar-event text-secondary" style="font-size: 10rem;"></i>
+                    <p class="text-muted mt-3">Sin imagen disponible</p>
+                </div>
+            {{/if}}
+        </div>
+        <div class="col-md-6">
+            <h1>{{evento.titulo}}</h1>
+            <p class="lead">{{evento.descripcion}}</p>
+            <hr>
+            <p><strong>Fecha:</strong> {{formatDate evento.fechaHora}}</p>
+            <p><strong>Cupo Total:</strong> {{evento.cupoTotal}}</p>
+            <p><strong>Código:</strong> {{evento.codigo}}</p>
+            <p>
+                <strong>Estado:</strong> 
+                <span class="badge {{#if (eq evento.estado 'ACTIVO')}}bg-success{{else if (eq evento.estado 'FINALIZADO')}}bg-secondary{{else}}bg-danger{{/if}}">
+                    {{evento.estado}}
+                </span>
+            </p>
+        </div>
+    </div>
+</div>
+
+{{!-- Lista simple con miniaturas --}}
+<ul class="list-group">
+    {{#each eventos}}
+    <li class="list-group-item d-flex align-items-center">
+        {{#if this.imagenUrl}}
+            <img src="{{this.imagenUrl}}" alt="{{this.titulo}}" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+        {{else}}
+            <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <i class="bi bi-calendar text-secondary"></i>
+            </div>
+        {{/if}}
+        <div class="flex-grow-1">
+            <h6 class="mb-1">{{this.titulo}}</h6>
+            <small class="text-muted">{{this.descripcion}}</small>
+            <br>
+            <small><i class="bi bi-calendar3"></i> {{formatDate this.fechaHora}}</small>
+        </div>
+        <span class="badge {{#if (eq this.estado 'ACTIVO')}}bg-success{{else if (eq this.estado 'FINALIZADO')}}bg-secondary{{else}}bg-danger{{/if}}">
+            {{this.estado}}
+        </span>
+    </li>
+    {{/each}}
+</ul>
+
+{{!-- Estilos adicionales recomendados (agregar en CSS) --}}
+<style>
+.card-evento {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-evento:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.card-img-top {
+    border-bottom: 1px solid #dee2e6;
+}
+</style>

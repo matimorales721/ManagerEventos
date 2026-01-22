@@ -1,0 +1,13 @@
+/* ==========================================
+   FOOTER
+   ========================================== */
+
+footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  margin-top: var(--spacing-xl);
+}
+
+footer p {
+  margin-bottom: 0;
+}

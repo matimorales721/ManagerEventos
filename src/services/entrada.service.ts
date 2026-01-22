@@ -85,7 +85,7 @@ export const reservarEntrada = async (data: ReservarEntradaDTO): Promise<IEntrad
 
 
   const entrada: IEntrada = {
-    id: generateId(),
+    id: '',
     codigo: generateTicketCode(),
     eventoId: evento.id,
     usuarioId: usuario.id,
@@ -96,7 +96,7 @@ export const reservarEntrada = async (data: ReservarEntradaDTO): Promise<IEntrad
     updatedAt: ahoraISO,
   };
 
-  await entradaModel.save(entrada);
+  entrada.id = await entradaModel.save(entrada);
   return entrada;
 }
 

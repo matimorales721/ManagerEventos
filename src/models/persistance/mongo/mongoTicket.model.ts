@@ -87,7 +87,7 @@ export const findAll = async (
 };
 
 
-export const save = async (entrada: IEntrada): Promise<void> => {
+export const save = async (entrada: IEntrada): Promise<string> => {
     const newTicket = new Ticket({
         code: entrada.codigo,
         eventId: new mongoose.Types.ObjectId(entrada.eventoId),
@@ -99,6 +99,7 @@ export const save = async (entrada: IEntrada): Promise<void> => {
         usageDate: entrada.fechaUso ? new Date(entrada.fechaUso) : undefined,
     });
     await newTicket.save();
+    return newTicket._id.toString();
 };
 
 export const findByEventoId = async (

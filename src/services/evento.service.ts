@@ -10,9 +10,11 @@ const eventoModel = getEventoModel();
 const entradaModel = getEntradaModel();
 
 interface CreateEventoDTO {
-  nombre: string;
+  titulo: string;
+  descripcion: string;
   fechaHora: string;   // ISO
   cupoTotal: number;
+  imagenUrl?: string;
 }
 
 // Genera un código único para el evento
@@ -29,18 +31,20 @@ export const crearEvento = async (data: CreateEventoDTO): Promise<IEvento> => {
   const ahora = newDate();
   const ahoraISO = ahora.toISOString();
 
-  const evento: IEvento = {
-    id: generateId(),
+  let evento: IEvento = {
+    id: '',
     codigo: generateEventCode(),
-    nombre: data.nombre,
+    titulo: data.titulo,
+    descripcion: data.descripcion,
     fechaHora: data.fechaHora,
     cupoTotal: data.cupoTotal,
+    imagenUrl: data.imagenUrl,
     estado: EventoEstado.ACTIVO,
     createdAt: ahoraISO,
     updatedAt: ahoraISO,
   };
 
-  await eventoModel.agregarEvento(evento);
+  evento.id = await eventoModel.agregarEvento(evento);
   return evento;
 }
 

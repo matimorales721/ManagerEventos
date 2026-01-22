@@ -13,11 +13,31 @@ main {
 .card-evento {
     transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
+    overflow: hidden;
 }
 
 .card-evento:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-evento .card-img-top {
+    border-bottom: 1px solid #dee2e6;
+    transition: transform 0.3s ease;
+}
+
+.card-evento:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.card-evento .card-text.text-muted {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 3em;
+    line-height: 1.5em;
 }
 
 .badge-estado {

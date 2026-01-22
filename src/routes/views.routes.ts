@@ -21,20 +21,18 @@ router.get("/logout", (req, res) => {
 });
 
 // Rutas principales
-router.get("/", authenticateOrNot, (req, res) => viewController.home(req, res));
+router.get("/", authenticateOrNot, viewController.home);
+router.get("/crear-evento", authenticate, authorize([UsuarioRol.ADMIN]), viewController.formCrearEvento);
+router.get("/eventos/:id", authenticate, viewController.eventoDetalle);
+router.get("/eventos/:id/reservar", authenticate, viewController.formReservarEntrada);
 
-router.get("/eventos/:id", authenticate, (req, res) => viewController.eventoDetalle(req, res));
-router.get("/eventos/:id/reservar", authenticate, (req, res) => viewController.formReservarEntrada(req, res));
+router.get("/mis-entradas", authenticate, viewController.misEntradas);
 
-router.get("/mis-entradas", authenticate, (req, res) => viewController.misEntradas(req, res)); // authenticate
+router.get("/entradas/:id/pagar", authenticate, viewController.formPagarEntrada);
+router.get("/entradas/:id", authenticate, viewController.entradaDetalle);
 
-router.get("/entradas/:id/pagar", authenticate, (req, res) => viewController.formPagarEntrada(req, res));
-
-router.get("/entradas/:id", authenticate, (req, res) => viewController.entradaDetalle(req, res));
-
-router.get("/validar-entradas", authenticate, authorize([UsuarioRol.ADMIN]), (req, res) => viewController.formValidarEntradas(req, res)); // authenticate and authorize([UsuarioRol.ADMIN])
-router.post("/validar-entradas/buscar", authenticate, (req, res) => viewController.buscarEntradaValidar(req, res)); // authenticate
-
-router.get("/cancelar-vencidas", authenticate, authorize([UsuarioRol.ADMIN]), (req, res) => viewController.mostrarCancelarVencidas(req, res)); // authenticate and authorize([UsuarioRol.ADMIN])
+router.get("/validar-entradas", authenticate, authorize([UsuarioRol.ADMIN]), viewController.formValidarEntradas);
+router.post("/validar-entradas/buscar", authenticate, viewController.buscarEntradaValidar);
+router.get("/cancelar-vencidas", authenticate, authorize([UsuarioRol.ADMIN]), viewController.mostrarCancelarVencidas);
 
 export default router;
