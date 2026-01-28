@@ -48,7 +48,7 @@ export const Ticket = mongoose.model<ITicket>('Ticket', ticketSchema);
 export const findById = async (
     id: string = '',
 ): Promise<IEntrada | null> => {
-    const [entradaDB] = await Ticket.find({ _id: id }).lean().populate('eventId').populate('userId');
+    const [entradaDB] = await Ticket.find({ _id: id }).lean();
     if (!entradaDB) return null;
 
     const entrada: IEntrada = {

@@ -1,19 +1,6 @@
 # Manager de Eventos
 
-Sistema de gestión de eventos, usuarios y entradas desarrollado con Node.js, Express, TypeScript y Handlebars.
-
-## Tabla de Contenidos
-
-- [Información General](#información-general)
-- [Características](#características)
-- [Tecnologías](#tecnologías)
-- [Instalación](#instalación)
-- [Vistas Web](#vistas-web)
-- [API REST](#api-rest)
-  - [Usuarios](#usuarios)
-  - [Eventos](#eventos)
-  - [Entradas](#entradas)
-- [Modelos de Datos](#modelos-de-datos)
+Sistema de gestión de eventos y venta de entradas desarrollado con Node.js, Express, TypeScript y Handlebars.
 
 ---
 
@@ -22,9 +9,9 @@ Sistema de gestión de eventos, usuarios y entradas desarrollado con Node.js, Ex
 Aplicación completa para la gestión de eventos y venta de entradas con:
 
 - **Frontend Web**: Interfaz de usuario con Handlebars y Bootstrap
-- **API REST**: Endpoints para integración con otros sistemas
-
-**URL Base:** `http://localhost:3000`
+- **API REST**: Endpoints bajo el prefijo `/api`
+- **Sistema de Autenticación**: JWT con cookies HttpOnly
+- **Persistencia Flexible**: Soporte para MySQL, MongoDB y archivos JSON (Actualmente solo está funcionando con MongoDB)
 
 ---
 
@@ -32,38 +19,29 @@ Aplicación completa para la gestión de eventos y venta de entradas con:
 
 ### Para Usuarios
 
-- 🎫 Explorar eventos disponibles con buscador en tiempo real
+- 🔐 Registro e inicio de sesión con validación de datos
+- 🎫 Explorar eventos disponibles
 - 📝 Reservar entradas para eventos
 - 💳 Pago simulado de entradas reservadas
-- 📱 Visualizar entradas con código QR (mock)
+- 📱 Visualizar entradas con código único
 - 📋 Gestionar mis entradas con filtros (Activas, Pendientes, Pasadas)
 
 ### Para Administradores
 
-- ✅ Validar entradas por código o escaneo de QR
+- 🎨 Crear eventos con imágenes
+- ✅ Validar entradas por código
 - 🔍 Buscar entradas por evento
 - 📊 Ver detalles completos de cada entrada
+- 🔄 Cancelar entradas vencidas manualmente
 
 ### Sistema
 
-- 🔄 Cancelación automática de entradas vencidas
-- 📧 Notificaciones por email (simuladas)
+- 🔐 Autenticación JWT con cookies HttpOnly
+- 🛡️ Rate limiting en endpoints de autenticación
 - 🎨 Interfaz responsive con Bootstrap 5
-- 🔐 Roles de usuario (Normal/Admin)
-
----
-
-## Tecnologías
-
-- **Node.js**
-- **Express.js** v5.2.1
-- **TypeScript** v5.9.3
-- **Handlebars** (express-handlebars) - Motor de plantillas
-- **Bootstrap** v5.3.0 - Framework CSS
-- **MySQL2** v3.16.0 - Base de datos
-- **dotenv** v17.2.3
-- **express-session** - Manejo de sesiones
-- **ts-node-dev** v2.0.0 (desarrollo)
+- 👥 Roles de usuario (Normal/Admin)
+- 📁 Carga de imágenes para eventos
+- 🏗️ Arquitectura modular con controladores, servicios y repositorios
 
 ---
 
@@ -75,547 +53,225 @@ npm install
 
 # Configurar variables de entorno
 cp .env.example .env
-# Editar .env con tus credenciales de MySQL
+# Editar .env con tus credenciales
 
-# Crear base de datos MySQL
-# Ejecutar el script database/schema.sql en tu servidor MySQL
 
-# Modo desarrollo
+# Modo desarrollo con hot reload
 npm run dev
 
 # Compilar TypeScript
 npm run build
 
-# Ejecutar en producción
-npm start
 ```
 
-### Configuración de Base de Datos
+### Configuración de Variables de Entorno
 
-El proyecto utiliza **MySQL** como base de datos:
+Crea un archivo `.env` en la raíz del proyecto usando el .env.example.
 
-1. Asegúrate de tener MySQL corriendo
-2. Ejecuta el script [database/schema.sql](database/schema.sql) para crear las tablas
-3. Configura tu archivo `.env` con las credenciales:
-   ```env
-   DB_HOST=localhost
-   DB_USER=tu_usuario
-   DB_PASSWORD=tu_password
-   DB_NAME=ManagerEventosDB
-   ```
 
-### Usuario Mockeado
+# Ejemplos de API con CURL
 
-Por defecto, el sistema utiliza un usuario mockeado para pruebas:
-
-- **Usuario Normal**: Juan Pérez (juan.perez@example.com)
-- **Usuario Admin**: Admin Sistema (admin@example.com)
-
-Puedes cambiar entre ellos agregando `?admin=true` a la URL o desde el menú del navbar.
+Todos los endpoints de la API están bajo el prefijo `/api`.
 
 ---
 
-## Vistas Web
+## Autenticación
 
-### Páginas Disponibles
+### Registro
 
-#### Para Usuarios Normales
-
-- **`/`** - Home: Lista de eventos con buscador
-- **`/eventos/:id`** - Detalle de evento
-- **`/eventos/:id/reservar`** - Formulario de reserva
-- **`/entradas/:id/pagar`** - Página de pago
-- **`/mis-entradas`** - Mis entradas con filtros
-- **`/entradas/:id`** - Detalle de entrada con QR
-
-#### Para Administradores
-
-- **`/validar-entradas`** - Validar entradas por código
-
-### Navegación
-
-La aplicación incluye una barra de navegación con:
-
-- Enlace a Home
-- Enlace a Mis Entradas
-- Enlace a Validar Entradas (solo para admins)
-- Dropdown de usuario con opción para cambiar entre usuario normal y admin
-
----
-
-## API REST
-
-Los endpoints de la API REST siguen disponibles para integración con otros sistemas.
-
-### Usuarios
-
-#### Crear Usuario
+Crear una nueva cuenta de usuario.
 
 ```bash
-POST /usuarios
-Content-Type: application/json
-
-{
-  "nombre": "Matias",
-  "apellido": "Morales",
-  "fechaNacimiento": "1990-01-01",
-  "email": "matias@gmail.com"
-}
-```
-
-**Ejemplo curl:**
-
-```bash
-curl -X POST http://localhost:3000/usuarios \
+curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
-    "nombre": "Matias",
-    "apellido": "Morales",
-    "fechaNacimiento": "1990-01-01",
-    "email": "matias@gmail.com"
+    "username": "juanperez",
+    "email": "juan@example.com",
+    "password": "Pa$$word2026",
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "fechaNacimiento": "1990-05-15"
   }'
 ```
 
-**Respuesta exitosa (201):**
+**Notas:**
 
-```json
-{
-  "id": "145c06ff-3ead-4bb5-a989-4e8e68e7562f",
-  "codigo": "USR-M2L01Z",
-  "nombre": "Matias",
-  "apellido": "Morales",
-  "fechaNacimiento": "1990-01-01T00:00:00.000Z",
-  "email": "matias@gmail.com",
-  "estado": "ACTIVO",
-  "createdAt": "2025-12-31T01:10:15.747Z",
-  "updatedAt": "2025-12-31T01:10:15.747Z"
-}
-```
-
-#### Listar Usuarios
-
-```bash
-GET /usuarios
-```
-
-**Ejemplo curl:**
-
-```bash
-curl http://localhost:3000/usuarios
-```
-
-#### Obtener Usuario por ID
-
-```bash
-GET /usuarios/:id
-```
-
-**Ejemplo curl:**
-
-```bash
-curl http://localhost:3000/usuarios/145c06ff-3ead-4bb5-a989-4e8e68e7562f
-```
+- El usuario se crea con rol `NORMAL` por defecto
 
 ---
 
-### Eventos
+### Login
 
-#### Crear Evento
-
-```bash
-POST /eventos
-Content-Type: application/json
-
-{
-  "nombre": "Concierto de Rock",
-  "fechaHora": "2025-12-31T20:00:00.000Z",
-  "cupoTotal": 1000
-}
-```
-
-**Ejemplo curl:**
+Iniciar sesión con credenciales existentes.
 
 ```bash
-curl -X POST http://localhost:3000/eventos \
+curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
+  -b cookies.txt \
   -d '{
-    "nombre": "Concierto de Rock",
-    "fechaHora": "2025-12-31T20:00:00.000Z",
-    "cupoTotal": 1000
+    "email": "juan@example.com",
+    "password": "Pa$$word2026"
   }'
 ```
 
-**Respuesta exitosa (201):**
+---
 
-```json
-{
-  "id": "3f023c42-26b5-489e-a122-19577964f3e7",
-  "codigo": "EVT-XYZ123",
-  "nombre": "Concierto de Rock",
-  "fechaHora": "2025-12-31T20:00:00.000Z",
-  "cupoTotal": 1000,
-  "estado": "ACTIVO",
-  "createdAt": "2025-12-31T01:00:00.000Z",
-  "updatedAt": "2025-12-31T01:00:00.000Z"
-}
-```
+## Eventos
 
-#### Listar Eventos
+### Crear Evento (Admin)
+
+Crear un nuevo evento. **Requiere rol ADMIN**.
+
+**Sin imagen:**
 
 ```bash
-GET /eventos
-```
-
-**Ejemplo curl:**
-
-```bash
-curl http://localhost:3000/eventos
-```
-
-#### Obtener Evento por ID
-
-```bash
-GET /eventos/:id
-```
-
-**Ejemplo curl:**
-
-```bash
-curl http://localhost:3000/eventos/3f023c42-26b5-489e-a122-19577964f3e7
+curl -X POST http://localhost:3000/api/eventos \
+  -b cookies.txt \
+  -F "titulo=Festival de Jazz" \
+  -F "descripcion=Noche de jazz en vivo" \
+  -F "fechaHora=2026-08-15T19:00:00.000Z" \
+  -F "cupoTotal=500" \
+  -F "ubicacion=Teatro Municipal" \
+  -F "direccion=Agustinas 794, Santiago Centro" \
+  -F "precioLocalidad=35000" \
+  -F "categoriaId=2"
 ```
 
 ---
 
-### Entradas
+### Listar Eventos
 
-#### Reservar Entrada
+Obtener todos los eventos. **No requiere autenticación**.
 
 ```bash
-POST /entradas/reservar
-Content-Type: application/json
-
-{
-  "eventoId": "3f023c42-26b5-489e-a122-19577964f3e7",
-  "usuarioId": "145c06ff-3ead-4bb5-a989-4e8e68e7562f",
-  "cantidadLocalidades": 3
-}
+curl -X GET http://localhost:3000/api/eventos
 ```
 
-**Ejemplo curl:**
+---
+
+### Obtener Evento por ID
+
+Obtener detalles de un evento específico. **No requiere autenticación**.
 
 ```bash
-curl -X POST http://localhost:3000/entradas/reservar \
+curl -X GET http://localhost:3000/api/eventos/69795ca7c7f8568844334718
+```
+
+---
+
+## Entradas
+
+### Reservar Entrada
+
+Reservar una entrada para un evento. **Requiere autenticación**.
+
+```bash
+curl -X POST http://localhost:3000/api/entradas/reservar \
   -H "Content-Type: application/json" \
+  -b cookies.txt \
   -d '{
-    "eventoId": "3f023c42-26b5-489e-a122-19577964f3e7",
-    "usuarioId": "145c06ff-3ead-4bb5-a989-4e8e68e7562f",
-    "cantidadLocalidades": 3
+    "eventoId": "69795ca7c7f8568844334718",
+    "cantidadLocalidades": 2
   }'
 ```
 
-**Respuesta exitosa (201):**
+**Notas:**
 
-```json
-{
-  "id": "abc123",
-  "codigo": "TKT-ABC123",
-  "eventoId": "3f023c42-26b5-489e-a122-19577964f3e7",
-  "usuarioId": "145c06ff-3ead-4bb5-a989-4e8e68e7562f",
-  "cantidadLocalidades": 3,
-  "estado": "NUEVA",
-  "fechaReserva": "2025-12-31T01:15:00.000Z",
-  "createdAt": "2025-12-31T01:15:00.000Z",
-  "updatedAt": "2025-12-31T01:15:00.000Z"
-}
-```
+- El `usuarioId` se obtiene automáticamente del token JWT
+- La entrada queda en estado `NUEVA` (pendiente de pago)
+- Tiene 24 horas para pagar antes de que se cancele
 
-#### Pagar Entrada
+---
+
+### Pagar Entrada
+
+Marcar una entrada como pagada. **Requiere autenticación**.
 
 ```bash
-POST /entradas/pagar/:id
+curl -X POST http://localhost:3000/api/entradas/pagar/69704c4c11efda0d86bcad4c \
+  -b cookies.txt
 ```
 
-**Ejemplo curl:**
+**Notas:**
+
+- Solo el dueño de la entrada puede pagarla
+- Cambia el estado de `NUEVA` a `ACTIVA`
+- Registra la fecha de pago
+
+---
+
+### Buscar Entrada
+
+Buscar una entrada por código y/o evento. **Requiere autenticación**.
+El codigo de entrada debe ser ingresado sin "ENT-" sólo los números
+```bash
+curl -X POST http://localhost:3000/api/entradas/buscar \
+  -H "Content-Type: application/json" \
+  -b cookies.txt \
+  eventoId \
+  -d '{
+    "codigoEntrada": "123455",
+    "eventoId": "1235645734534535"
+  }'
+```
+---
+
+### Listar Mis Entradas
+
+Obtener todas las entradas del usuario autenticado. **Requiere autenticación**.
 
 ```bash
-curl -X POST http://localhost:3000/entradas/pagar/fdaef8f4-a4f9-4aba-bd50-9208a6311f4f
-```
-
-**Respuesta exitosa (200):**
-
-```json
-{
-  "id": "abc123",
-  "codigo": "TKT-ABC123",
-  "eventoId": "3f023c42-26b5-489e-a122-19577964f3e7",
-  "usuarioId": "145c06ff-3ead-4bb5-a989-4e8e68e7562f",
-  "cantidadLocalidades": 3,
-  "estado": "ACTIVA",
-  "fechaReserva": "2025-12-31T01:15:00.000Z",
-  "fechaPago": "2025-12-31T01:20:00.000Z",
-  "createdAt": "2025-12-31T01:15:00.000Z",
-  "updatedAt": "2025-12-31T01:20:00.000Z"
-}
-```
-
-#### Validar Entrada (por código)
-
-```bash
-POST /entradas/validar/:codigo
-```
-
-**Ejemplo curl:**
-
-```bash
-curl -X POST http://localhost:3000/entradas/validar/TKT-ABC123
-```
-
-**Respuesta exitosa (200):**
-
-```json
-{
-  "id": "abc123",
-  "codigo": "TKT-ABC123",
-  "eventoId": "3f023c42-26b5-489e-a122-19577964f3e7",
-  "usuarioId": "145c06ff-3ead-4bb5-a989-4e8e68e7562f",
-  "cantidadLocalidades": 3,
-  "estado": "UTILIZADA",
-  "fechaReserva": "2025-12-31T01:15:00.000Z",
-  "fechaPago": "2025-12-31T01:20:00.000Z",
-  "fechaUso": "2025-12-31T20:00:00.000Z",
-  "createdAt": "2025-12-31T01:15:00.000Z",
-  "updatedAt": "2025-12-31T20:00:00.000Z"
-}
-```
-
-#### Cancelar Entradas Vencidas
-
-```bash
-POST /entradas/cancelar-vencidas
-```
-
-**Ejemplo curl:**
-
-```bash
-curl -X POST http://localhost:3000/entradas/cancelar-vencidas
-```
-
-**Respuesta exitosa (200):**
-
-```json
-{
-  "message": "Entradas vencidas canceladas",
-  "cantidad": 5
-}
-```
-
-#### Listar Entradas
-
-```bash
-GET /entradas
-```
-
-**Ejemplo curl:**
-
-```bash
-curl http://localhost:3000/entradas
-```
-
-**Con formato legible:**
-
-```bash
-curl http://localhost:3000/entradas | json_pp
-```
-
-#### Obtener Entrada por ID
-
-```bash
-GET /entradas/:id
-```
-
-**Ejemplo curl:**
-
-```bash
-curl http://localhost:3000/entradas/abc123
+curl -X GET http://localhost:3000/api/entradas \
+  -b cookies.txt
 ```
 
 ---
 
-## Modelos de Datos
+### Obtener Entrada por ID
 
-### Usuario
+Obtener detalles de una entrada específica. **Requiere autenticación**.
 
-```typescript
-{
-  id: string; // UUID generado automáticamente
-  codigo: string; // Código único (ej: "USR-M2L01Z")
-  nombre: string;
-  apellido: string;
-  fechaNacimiento: string; // ISO 8601
-  email: string;
-  estado: "ACTIVO" | "BORRADO";
-  createdAt: string; // ISO 8601
-  updatedAt: string; // ISO 8601
-}
+```bash
+curl -X GET http://localhost:3000/api/entradas/69704c4c11efda0d86bcad4c \
+  -b cookies.txt
 ```
 
-**Estados posibles:**
+**Notas:**
 
-- `ACTIVO`: Usuario activo en el sistema
-- `BORRADO`: Usuario eliminado (soft delete)
-
-### Evento
-
-```typescript
-{
-  id: string; // UUID generado automáticamente
-  codigo: string; // Código único del evento
-  nombre: string;
-  fechaHora: string; // ISO 8601
-  cupoTotal: number; // Capacidad máxima
-  estado: "ACTIVO" | "FINALIZADO" | "CANCELADO";
-  createdAt: string; // ISO 8601
-  updatedAt: string; // ISO 8601
-}
-```
-
-**Estados posibles:**
-
-- `ACTIVO`: Evento disponible para venta
-- `FINALIZADO`: Evento ya realizado
-- `CANCELADO`: Evento cancelado
-
-### Entrada
-
-```typescript
-{
-  id: string;                 // UUID generado automáticamente
-  codigo: string;             // Código único de entrada
-  eventoId: string;           // Referencia al evento
-  usuarioId: string;          // Referencia al usuario
-  cantidadLocalidades: number;// Número de localidades reservadas
-  estado: "NUEVA" | "ACTIVA" | "UTILIZADA" | "CANCELADA";
-  fechaReserva: string;       // ISO 8601 - Cuándo se reservó
-  fechaPago?: string;         // ISO 8601 - Cuándo se pagó
-  fechaUso?: string;          // ISO 8601 - Cuándo se validó
-  createdAt: string;          // ISO 8601
-  updatedAt: string;          // ISO 8601
-}
-```
-
-**Estados posibles:**
-
-- `NUEVA`: Reservada pero no pagada
-- `ACTIVA`: Pagada y lista para usar
-- `UTILIZADA`: Validada en el evento
-- `CANCELADA`: Vencida o cancelada
+- Solo el dueño de la entrada puede verla (excepto admins)
 
 ---
 
-## Códigos de Respuesta HTTP
+### Validar Entrada (Admin)
 
-- **200**: OK - Solicitud exitosa
-- **201**: Created - Recurso creado exitosamente
-- **400**: Bad Request - Datos inválidos o error en la lógica de negocio
-- **404**: Not Found - Recurso no encontrado
-- **500**: Internal Server Error - Error del servidor
+Validar una entrada en el evento. **Requiere autenticación y rol ADMIN**.
 
----
-
-## Estructura del Proyecto
-
-```
-ManagerEventos/
-├── database/                # Scripts SQL
-│   └── schema.sql          # Schema de MySQL
-├── public/                  # Archivos estáticos
-│   ├── css/                # Estilos personalizados
-│   ├── js/                 # JavaScript del cliente
-│   └── images/             # Imágenes
-├── src/
-│   ├── app.ts              # Configuración de Express y Handlebars
-│   ├── server.ts           # Punto de entrada
-│   ├── config/             # Configuraciones
-│   ├── controllers/        # Controladores (API y Vistas)
-│   │   ├── EntradaController.ts
-│   │   ├── EventoController.ts
-│   │   ├── UsuarioController.ts
-│   │   └── ViewController.ts  # Controlador de vistas web
-│   ├── middleware/         # Middlewares
-│   │   └── mockUser.ts     # Usuario mockeado
-│   ├── models/             # Interfaces y enums
-│   │   ├── Entrada.ts
-│   │   ├── Evento.ts
-│   │   ├── Usuario.ts
-│   │   └── enums/
-│   │       ├── entradaEstado.ts
-│   │       ├── eventoEstado.ts
-│   │       ├── usuarioEstado.ts
-│   │       └── usuarioRol.ts  # Roles (NORMAL/ADMIN)
-│   ├── persistence/        # Capa de persistencia
-│   │   └── db/             # Repositorios MySQL
-│   ├── repositories/       # Interfaces de repositorios
-│   ├── routes/             # Definición de rutas
-│   │   ├── entradas.routes.ts
-│   │   ├── eventos.routes.ts
-│   │   ├── usuarios.routes.ts
-│   │   └── views.routes.ts    # Rutas de vistas web
-│   ├── services/           # Lógica de negocio
-│   └── utils/              # Utilidades
-├── views/                   # Plantillas Handlebars
-│   ├── layouts/
-│   │   └── main.hbs        # Layout principal
-│   ├── partials/
-│   │   └── navbar.hbs      # Barra de navegación
-│   ├── home.hbs
-│   ├── evento.hbs
-│   ├── reservar-entrada.hbs
-│   ├── reserva-confirmada.hbs
-│   ├── pagar-entrada.hbs
-│   ├── pago-confirmado.hbs
-│   ├── mis-entradas.hbs
-│   ├── entrada-detalle.hbs
-│   ├── validar-entradas.hbs
-│   └── error.hbs
-├── .env                    # Variables de entorno (no versionado)
-├── .env.example            # Plantilla de variables de entorno
-├── package.json
-└── tsconfig.json
+```bash
+curl -X POST http://localhost:3000/api/entradas/validar/ABC123 \
+  -b cookies.txt
 ```
 
----
+**Notas:**
 
-## Notas
-
-- Las entradas reservadas (`NUEVA`) tienen un tiempo límite de 24 horas para ser pagadas antes de ser canceladas automáticamente.
-- El sistema valida disponibilidad de cupo antes de permitir reservas.
-- Todos los IDs son UUIDs generados automáticamente.
-- Los códigos únicos se generan automáticamente para cada recurso.
-- **Precio por localidad**: $5,000 (simulado)
-- **Usuario mockeado**: El sistema incluye un middleware que simula usuarios logueados para pruebas
+- Solo en el código de la entrada (sin prefijo `ENT-`)
+- Cambia el estado de `ACTIVA` a `UTILIZADA`
+- Registra la fecha de uso
+- Solo usuarios ADMIN pueden validar entradas
 
 ---
 
-## Hitos Completados
+### Cancelar Entradas Vencidas (Admin)
 
-- ✅ Endpoints REST de Eventos, Usuarios y Entradas
-- ✅ Implementación de MySQL como base de datos
-- ✅ Vistas web con Handlebars y Bootstrap
-- ✅ Sistema de roles (Normal/Admin)
-- ✅ Validación de entradas para administradores
-- ✅ Gestión completa del flujo de reserva y pago
+Cancelar todas las entradas que están vencidas. **Requiere autenticación y rol ADMIN**.
 
----
+```bash
+curl -X POST http://localhost:3000/api/entradas/cancelar-vencidas \
+  -b cookies.txt
+```
 
-## Ideas para Desarrollo Futuro
+**Notas:**
 
-- 🔐 Implementar autenticación real con JWT o sesiones
-- 💳 Integrar API real de MercadoPago
-- 📧 Envío de emails reales con confirmaciones
-- 📱 Generar códigos QR reales
-- 📊 Panel de administración completo
-- 📈 Estadísticas y reportes de eventos
-- 🎨 Mejorar diseño y UX
-- ⏰ Sistema de recordatorios para eventos próximos
-- 🔔 Notificaciones en tiempo real
-- 📱 Aplicación móvil nativa
+- Cancela entradas en estado `NUEVA` que han pasado más de 24 horas
+- Solo usuarios ADMIN pueden ejecutar esta acción
+- Retorna la cantidad de entradas canceladas
+
