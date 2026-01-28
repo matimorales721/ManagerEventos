@@ -11,7 +11,7 @@ export const crearEvento = async (req: Request, res: Response) => {
     const precioLocalidad = parseFloat(req.body.precioLocalidad);
 
     if (!titulo || !descripcion || !fechaHora || !cupoTotal || cupoTotal < 1 ||
-        !ubicacion || !direccion || isNaN(precioLocalidad) || precioLocalidad < 0 || !categoriaId) {
+      !ubicacion || !direccion || isNaN(precioLocalidad) || precioLocalidad < 0 || !categoriaId) {
       // Si hay error de validación y se subió imagen, eliminarla
       if (req.file) {
         fs.unlinkSync(req.file.path);
