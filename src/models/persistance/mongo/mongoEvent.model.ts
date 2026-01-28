@@ -9,6 +9,10 @@ export interface IEvent extends Document {
     dateTime: Date;
     totalCapacity: number;
     imageUrl?: string;
+    location: string;
+    address: string;
+    ticketPrice: number;
+    categoryId: string;
     state: string;
     createdAt: Date;
     updatedAt: Date;
@@ -39,6 +43,10 @@ const eventSchema = new Schema<IEvent>(
         dateTime: { type: Date, required: true },
         totalCapacity: { type: Number, required: true, min: 1 },
         imageUrl: { type: String },
+        location: { type: String, required: true },
+        address: { type: String, required: true },
+        ticketPrice: { type: Number, required: true, min: 0 },
+        categoryId: { type: String, required: true },
         state: { type: String, enum: [], default: 'ACTIVO' } as any,
     },
     { timestamps: true }
@@ -60,6 +68,10 @@ export const findById = async (
         fechaHora: eventoDB.dateTime.toISOString(),
         cupoTotal: eventoDB.totalCapacity,
         imagenUrl: eventoDB.imageUrl,
+        ubicacion: eventoDB.location,
+        direccion: eventoDB.address,
+        precioLocalidad: eventoDB.ticketPrice,
+        categoriaId: eventoDB.categoryId,
         estado: eventoDB.state?.toString() as any,
         createdAt: eventoDB.createdAt.toISOString(),
         updatedAt: eventoDB.updatedAt.toISOString(),
@@ -77,6 +89,10 @@ export const findAll = async (): Promise<IEvento[]> => {
         fechaHora: eventoDB.dateTime.toISOString(),
         cupoTotal: eventoDB.totalCapacity,
         imagenUrl: eventoDB.imageUrl,
+        ubicacion: eventoDB.location,
+        direccion: eventoDB.address,
+        precioLocalidad: eventoDB.ticketPrice,
+        categoriaId: eventoDB.categoryId,
         estado: eventoDB.state?.toString() as any,
         createdAt: eventoDB.createdAt.toISOString(),
         updatedAt: eventoDB.updatedAt.toISOString(),
@@ -91,6 +107,10 @@ export const agregarEvento = async (evento: IEvento): Promise<string> => {
         dateTime: new Date(evento.fechaHora),
         totalCapacity: evento.cupoTotal,
         imageUrl: evento.imagenUrl,
+        location: evento.ubicacion,
+        address: evento.direccion,
+        ticketPrice: evento.precioLocalidad,
+        categoryId: evento.categoriaId,
     });
     await newEvent.save();
     return newEvent._id.toString();

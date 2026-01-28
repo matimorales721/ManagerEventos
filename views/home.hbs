@@ -52,13 +52,23 @@
                         <i class="bi bi-calendar3"></i> {{formatDate this.fechaHora}}
                     </p>
                     <p class="card-text mb-2">
-                        <i class="bi bi-people"></i> Cupo Total: {{this.cupoTotal}}
+                        <i class="bi bi-geo-alt"></i> {{this.ubicacion}}
+                    </p>
+                    <p class="card-text mb-2">
+                        <i class="bi bi-people"></i> Cupo: {{this.cupoTotal}}
+                    </p>
+                    <p class="card-text mb-2">
+                        <i class="bi bi-currency-dollar text-success"></i> 
+                        <strong>${{this.precioLocalidad}}</strong>
                     </p>
                     <p class="mb-0">
                         <span class="badge {{#if (eq this.estado 'ACTIVO')}}bg-success{{else if (eq this.estado 'FINALIZADO')}}bg-secondary{{else}}bg-danger{{/if}}">
                             {{this.estado}}
                         </span>
-                        <small class="text-muted ms-2">{{this.codigo}}</small>
+                        <span class="badge bg-info text-dark ms-1 text-capitalize">
+                            <i class="bi bi-tag-fill"></i> {{this.categoriaId}}
+                        </span>
+                        <small class="text-muted ms-2 d-block mt-1">{{this.codigo}}</small>
                     </p>
                 </div>
             </div>

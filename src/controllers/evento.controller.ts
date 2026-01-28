@@ -4,12 +4,14 @@ import fs from "fs";
 
 export const crearEvento = async (req: Request, res: Response) => {
   try {
-    const { titulo, descripcion, fechaHora } = req.body;
+    const { titulo, descripcion, fechaHora, ubicacion, direccion, categoriaId } = req.body;
 
     // Convertir cupoTotal a número (FormData lo envía como string)
     const cupoTotal = parseInt(req.body.cupoTotal, 10);
+    const precioLocalidad = parseFloat(req.body.precioLocalidad);
 
-    if (!titulo || !descripcion || !fechaHora || !cupoTotal || cupoTotal < 1) {
+    if (!titulo || !descripcion || !fechaHora || !cupoTotal || cupoTotal < 1 ||
+        !ubicacion || !direccion || isNaN(precioLocalidad) || precioLocalidad < 0 || !categoriaId) {
       // Si hay error de validación y se subió imagen, eliminarla
       if (req.file) {
         fs.unlinkSync(req.file.path);
@@ -28,6 +30,10 @@ export const crearEvento = async (req: Request, res: Response) => {
       fechaHora,
       cupoTotal,
       imagenUrl,
+      ubicacion,
+      direccion,
+      precioLocalidad,
+      categoriaId,
     });
 
     return res.status(201).json(evento);

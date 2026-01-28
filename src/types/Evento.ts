@@ -9,6 +9,10 @@ export interface IEvento {
   cupoTotal: number;
   imagenUrl?: string;
   estado?: EventoEstado;
+  ubicacion: string;
+  direccion: string;
+  precioLocalidad: number;
+  categoriaId: string;
   createdAt: string;
   updatedAt: string;
 }

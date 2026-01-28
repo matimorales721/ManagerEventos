@@ -12,6 +12,16 @@
                     <strong>Disponibles:</strong> {{disponibles}} localidades
                 </div>
 
+                <div class="alert alert-success mb-3">
+                    <i class="bi bi-currency-dollar"></i> 
+                    <strong>Precio por localidad:</strong> ${{evento.precioLocalidad}}
+                </div>
+
+                <div class="alert alert-primary mb-3" id="totalAlert" style="display: none;">
+                    <i class="bi bi-calculator"></i> 
+                    <strong>Total a pagar:</strong> <span id="totalPrecio" class="fs-5 fw-bold">$0</span>
+                </div>
+
                 <div id="alertContainer"></div>
                 
                 <form id="formReserva">
@@ -47,6 +57,30 @@
 </div>
 
 <script>
+// Calcular total dinámicamente
+const cantidadInput = document.getElementById('cantidadLocalidades');
+const precioUnitario = {{evento.precioLocalidad}};
+
+cantidadInput.addEventListener('input', function() {
+    const cantidad = parseInt(this.value) || 0;
+    const total = cantidad * precioUnitario;
+    
+    const totalAlert = document.getElementById('totalAlert');
+    const totalPrecio = document.getElementById('totalPrecio');
+    
+    if (cantidad > 0) {
+        totalAlert.style.display = 'block';
+        totalPrecio.textContent = `$${total.toFixed(2)}`;
+    } else {
+        totalAlert.style.display = 'none';
+    }
+});
+
+// Mostrar total inicial si hay valor por defecto
+if (cantidadInput.value > 0) {
+    cantidadInput.dispatchEvent(new Event('input'));
+}
+
 document.getElementById('formReserva').addEventListener('submit', async (e) => {
     e.preventDefault();
     

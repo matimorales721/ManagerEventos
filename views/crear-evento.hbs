@@ -87,6 +87,55 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <!-- Ubicación -->
+                        <div class="col-md-6 mb-4">
+                            <label for="ubicacion" class="form-label fw-bold">
+                                <i class="bi bi-geo-alt text-dark"></i> Ubicación *
+                            </label>
+                            <input type="text" class="form-control" id="ubicacion" name="ubicacion" 
+                                   placeholder="Ej: Rosario, Santa Fe" required minlength="2">
+                            <small class="text-muted">Ciudad o lugar del evento</small>
+                        </div>
+
+                        <!-- Precio por Localidad -->
+                        <div class="col-md-6 mb-4">
+                            <label for="precioLocalidad" class="form-label fw-bold">
+                                <i class="bi bi-currency-dollar text-dark"></i> Precio por Localidad *
+                            </label>
+                            <input type="number" class="form-control" id="precioLocalidad" name="precioLocalidad" 
+                                   placeholder="Ej: 5000" required min="0" step="0.01" value="0">
+                            <small class="text-muted">Precio en pesos por entrada</small>
+                        </div>
+                    </div>
+
+                    <!-- Dirección -->
+                    <div class="mb-4">
+                        <label for="direccion" class="form-label fw-bold">
+                            <i class="bi bi-map text-dark"></i> Dirección *
+                        </label>
+                        <input type="text" class="form-control" id="direccion" name="direccion" 
+                               placeholder="Ej: Av. Belgrano 1234" required minlength="5">
+                        <small class="text-muted">Dirección completa del evento</small>
+                    </div>
+
+                    <!-- Categoría -->
+                    <div class="mb-4">
+                        <label for="categoriaId" class="form-label fw-bold">
+                            <i class="bi bi-tags text-dark"></i> Categoría *
+                        </label>
+                        <select class="form-select" id="categoriaId" name="categoriaId" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="concierto">Concierto</option>
+                            <option value="teatro">Teatro</option>
+                            <option value="deporte">Deporte</option>
+                            <option value="conferencia">Conferencia</option>
+                            <option value="festival">Festival</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                        <small class="text-muted">Tipo de evento</small>
+                    </div>
+
                     <!-- Información adicional -->
                     <div class="alert alert-info mb-4">
                         <i class="bi bi-info-circle-fill"></i> <strong>Nota:</strong>
@@ -208,6 +257,10 @@
         formData.append('descripcion', document.getElementById('descripcion').value.trim());
         formData.append('fechaHora', fechaHoraISO);
         formData.append('cupoTotal', document.getElementById('cupoTotal').value);
+        formData.append('ubicacion', document.getElementById('ubicacion').value.trim());
+        formData.append('direccion', document.getElementById('direccion').value.trim());
+        formData.append('precioLocalidad', document.getElementById('precioLocalidad').value);
+        formData.append('categoriaId', document.getElementById('categoriaId').value);
         
         const imagenFile = document.getElementById('imagen').files[0];
         if (imagenFile) {

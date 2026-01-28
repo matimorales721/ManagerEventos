@@ -15,6 +15,10 @@ interface CreateEventoDTO {
   fechaHora: string;   // ISO
   cupoTotal: number;
   imagenUrl?: string;
+  ubicacion: string;
+  direccion: string;
+  precioLocalidad: number;
+  categoriaId: string;
 }
 
 // Genera un código único para el evento
@@ -39,6 +43,10 @@ export const crearEvento = async (data: CreateEventoDTO): Promise<IEvento> => {
     fechaHora: data.fechaHora,
     cupoTotal: data.cupoTotal,
     imagenUrl: data.imagenUrl,
+    ubicacion: data.ubicacion,
+    direccion: data.direccion,
+    precioLocalidad: data.precioLocalidad,
+    categoriaId: data.categoriaId,
     estado: EventoEstado.ACTIVO,
     createdAt: ahoraISO,
     updatedAt: ahoraISO,
